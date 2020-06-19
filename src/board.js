@@ -11,6 +11,17 @@ export default class Board extends React.Component {
             countdownIntervalID: 0,
             countdown: 0,
         };
+
+        this.handleTouchStart = this.handleTouchStart.bind(this);
+        this.handleTouchMove = this.handleTouchMove.bind(this);
+        this.handleTouchEnd = this.handleTouchEnd.bind(this);
+    }
+
+    componentDidMount() {
+        window.addEventListener('touchstart', this.handleTouchStart, { passive: false });
+        window.addEventListener('touchend', this.handleTouchEnd, { passive: false });
+        window.addEventListener('touchcancel', this.handleTouchEnd, { passive: false });
+        window.addEventListener('touchmove', this.handleTouchMove, { passive: false });
     }
 
     handleTouchStart(e) {
@@ -83,3 +94,16 @@ export default class Board extends React.Component {
 }
 
 const generateColour = () => vars.COLOURS[Math.ceil(Math.random() * vars.COLOURS.length) - 1];
+const getTouchById = (touchPoints, id) => touchPoints.filter(item => item.touch.identifier === id)[0];
+const getCenterPoint = () => {
+    return {
+        x: (window.innerWidth / 2), 
+        y: (window.innerHeight / 2),
+    };
+}
+
+const getAngleFromCenter = (x, y) => {
+    const center = getCenterPoint();
+    const angle = Math.atan2(y - center.y, x - center.x) * 180 / Math.PI + 180;
+    return angle;
+};
