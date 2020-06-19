@@ -1,5 +1,5 @@
 import React from 'react';
-import TouchCircle from './touch-circle';
+import TouchCircle from './touchCircle';
 import vars from './vars';
 
 export default class Board extends React.Component {

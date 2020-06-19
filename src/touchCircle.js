@@ -1,6 +1,6 @@
 import React from 'react';
 import vars from './vars';
-import './touch-circle.css';
+import './touchCircle.css';
 
 export default class TouchCircle extends React.PureComponent {
     constructor(props) {
