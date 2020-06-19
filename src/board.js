@@ -18,6 +18,10 @@ export default class Board extends React.Component {
     }
 
     componentDidMount() {
+        // to stop the built in browser gesture interfering with the multitouch
+        // events we need to turn off passive events for the touch which can
+        // only be done in a lifecycle hook (this code was moved from the svg
+        // declaration)
         window.addEventListener('touchstart', this.handleTouchStart, { passive: false });
         window.addEventListener('touchend', this.handleTouchEnd, { passive: false });
         window.addEventListener('touchcancel', this.handleTouchEnd, { passive: false });
