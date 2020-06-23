@@ -1,30 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 import vars from './vars';
 import './touchCircle.css';
 
-export default class TouchCircle extends React.PureComponent {
-    constructor(props) {
-        super(props);
+export default function TouchCircle(props) {
+    const [colour] = useState(props.colour);
 
-        this.state = {
-            colour: this.props.colour
-        };
-    }
+    return (
+        <circle
+            xmlns={ vars.SVG_NS }
+            cx={ props.cx }
+            cy={ props.cy }
+            r={ vars.TOUCH_RADIUS }
+            fill={ colour }
+            className="touch-gfx"
+            style={{
+                transformOrigin: `${props.cx}px ${props.cy}px`
+            }}
+        />
 
-    render() {
-        return (
-            <circle
-                xmlns={ vars.SVG_NS }
-                cx={ this.props.cx }
-                cy={ this.props.cy }
-                r={ vars.TOUCH_RADIUS }
-                fill={ this.state.colour }
-                className="touch-gfx"
-                style={{
-                    transformOrigin: `${this.props.cx}px ${this.props.cy}px`
-                }}
-            />
-
-        );
-    }
+    );
 }
