@@ -1,36 +1,31 @@
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import TouchCircle from './touchCircle';
 import vars from './vars';
 
-export default class Board extends React.Component {
-    constructor(props) {
-        super(props);
+export default function Board(props) {
 
-        this.state = {
-            touchPoints: [ ],
-            countdownIntervalID: 0,
-            countdown: 0,
-        };
+    const [touchPoints, setTouchPoints] = useState([]);
 
-        this.handleTouchStart = this.handleTouchStart.bind(this);
-        this.handleTouchMove = this.handleTouchMove.bind(this);
-        this.handleTouchEnd = this.handleTouchEnd.bind(this);
-    }
+    useEffect(() => {
+        console.log('adding event listeners');
+        window.addEventListener('touchstart', handleTouchStart, { passive: false });
+        window.addEventListener('touchend', handleTouchEnd, { passive: false });
+        window.addEventListener('touchcancel', handleTouchEnd, { passive: false });
+        window.addEventListener('touchmove', handleTouchMove, { passive: false });
 
-    componentDidMount() {
-        // to stop the built in browser gesture interfering with the multitouch
-        // events we need to turn off passive events for the touch which can
-        // only be done in a lifecycle hook (this code was moved from the svg
-        // declaration)
-        window.addEventListener('touchstart', this.handleTouchStart, { passive: false });
-        window.addEventListener('touchend', this.handleTouchEnd, { passive: false });
-        window.addEventListener('touchcancel', this.handleTouchEnd, { passive: false });
-        window.addEventListener('touchmove', this.handleTouchMove, { passive: false });
-    }
+        return () => {
+            console.log('removing event listeners');
+            window.removeEventListener('touchstart', handleTouchStart, { passive: false });
+            window.removeEventListener('touchend', handleTouchEnd, { passive: false });
+            window.removeEventListener('touchcancel', handleTouchEnd, { passive: false });
+            window.removeEventListener('touchmove', handleTouchMove, { passive: false });
+        }
+    });
 
-    handleTouchStart(e) {
+    const handleTouchStart = useCallback((e) => {
         e.preventDefault();
-        const touchPoints = this.state.touchPoints.slice();
+
+        const tp = touchPoints.slice();
 
         // note e.changedTouches is a TouchList not an array
         // so we can't map over it
@@ -38,63 +33,64 @@ export default class Board extends React.Component {
             const touch = e.changedTouches[i];
             const angle = getAngleFromCenter(touch.pageX, touch.pageY);
 
-            touchPoints.push({
+            tp.push({
                 touch,
                 angle,
             });
         }
-        this.setState({ touchPoints });
-    }
+        setTouchPoints(tp);
+    }, [touchPoints, setTouchPoints]);
 
-    handleTouchMove(e) {
+    const handleTouchMove = useCallback((e) => {
         e.preventDefault();
-        const touchPoints = this.state.touchPoints.slice();
+
+        const tp = touchPoints.slice();
 
         for (var i = 0; i < e.changedTouches.length; i++) {
-            const touch = getTouchById(touchPoints, e.changedTouches[i].identifier);
+            const touch = getTouchById(tp, e.changedTouches[i].identifier);
             if (!touch) continue;
             touch.touch = e.changedTouches[i];
             touch.angle = getAngleFromCenter(touch.touch.pageX, touch.touch.pageY);
         }
 
-        this.setState({ touchPoints });
-    }
+        setTouchPoints(tp);
+    }, [touchPoints, setTouchPoints]);
 
-    handleTouchEnd(e) {
+    const handleTouchEnd = useCallback((e) => {
         e.preventDefault();
-        const touchPoints = this.state.touchPoints.slice();
+
+        const tp = touchPoints.slice();
 
         for (var i = 0; i < e.changedTouches.length; i++) {
-            const touch = getTouchById(touchPoints, e.changedTouches[i].identifier);
-            const index = touchPoints.indexOf(touch);
-            touchPoints.splice(index, 1);
+            const touch = getTouchById(tp, e.changedTouches[i].identifier);
+            const index = tp.indexOf(touch);
+            tp.splice(index, 1);
         }
 
-        this.setState({ touchPoints });
-    }
+        setTouchPoints(tp);
+    }, [touchPoints, setTouchPoints]);
+
 
     // TODO add udpate if size changes using shouldComponentUpdate
 
-    render() {
-        const touchPoints = this.state.touchPoints.map(touchpoint =>
-            <TouchCircle 
-                key={ touchpoint.touch.identifier }
-                cx={ touchpoint.touch.pageX }
-                cy={ touchpoint.touch.pageY }
-                colour={ generateColour() }
-            />
-        );
-
-        return (
-            <svg 
-                xmlns={ vars.SVG_NS }
-                width={ window.innerWidth }
-                height={ window.innerHeight }
-            >
-                { touchPoints }
-            </svg>
-        );
-    }
+    return (
+        <svg 
+            xmlns={ vars.SVG_NS }
+            width={ window.innerWidth }
+            height={ window.innerHeight }
+        >
+            { 
+                touchPoints.map(touchpoint =>
+                    <TouchCircle 
+                        key={ touchpoint.touch.identifier }
+                        cx={ touchpoint.touch.pageX }
+                        cy={ touchpoint.touch.pageY }
+                        colour={ generateColour() }
+                    />
+                )
+            }
+        </svg>
+    );
 }
 
 const generateColour = () => vars.COLOURS[Math.ceil(Math.random() * vars.COLOURS.length) - 1];
