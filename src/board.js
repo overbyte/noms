@@ -28,6 +28,13 @@ export default class Board extends React.Component {
         window.addEventListener('touchmove', this.handleTouchMove, { passive: false });
     }
 
+    componentWillUnmount() {
+        window.removeEventListener('touchstart', this.handleTouchStart, { passive: false });
+        window.removeEventListener('touchend', this.handleTouchEnd, { passive: false });
+        window.removeEventListener('touchcancel', this.handleTouchEnd, { passive: false });
+        window.removeEventListener('touchmove', this.handleTouchMove, { passive: false });
+    }
+
     handleTouchStart(e) {
         e.preventDefault();
         const touchPoints = this.state.touchPoints.slice();
