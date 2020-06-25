@@ -94,7 +94,8 @@ export default function Board(props) {
 }
 
 const generateColour = () => vars.COLOURS[Math.ceil(Math.random() * vars.COLOURS.length) - 1];
-const getTouchById = (touchPoints, id) => touchPoints.filter(item => item.touch.identifier === id)[0];
+const getTouchIndexById = (touchPoints, newTouch) => touchPoints.findIndex(t => t.touch.identifier === newTouch.identifier);
+
 const getCenterPoint = () => {
     return {
         x: (window.innerWidth / 2), 
