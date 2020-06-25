@@ -80,7 +80,7 @@ export default function Board(props) {
             svgRef.removeEventListener('touchend', handleTouchEnd, { passive: false });
             svgRef.removeEventListener('touchcancel', handleTouchEnd, { passive: false });
         }
-    }, []);// eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [setTouchPoints]);// eslint-disable-next-line react-hooks/exhaustive-deps
 
     // TODO add udpate if size changes using shouldComponentUpdate
 
