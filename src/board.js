@@ -1,80 +1,92 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import TouchCircle from './touchCircle';
 import vars from './vars';
 
 export default function Board(props) {
-
     const [touchPoints, setTouchPoints] = useState([]);
+    const svg = useRef();
 
     useEffect(() => {
-        console.log('adding event listeners');
-        window.addEventListener('touchstart', handleTouchStart, { passive: false });
-        window.addEventListener('touchend', handleTouchEnd, { passive: false });
-        window.addEventListener('touchcancel', handleTouchEnd, { passive: false });
-        window.addEventListener('touchmove', handleTouchMove, { passive: false });
+        const svgRef = svg.current;
+
+        const handleTouchStart = (e) => {
+            e.preventDefault();
+
+            // use functional version of mutator
+            setTouchPoints(tp => {
+                // duplicate array
+                tp = tp.slice();
+
+                // note e.changedTouches is a TouchList not an array
+                // so we can't map over it
+                for (var i = 0; i < e.changedTouches.length; i++) {
+                    const touch = e.changedTouches[i];
+                    const angle = getAngleFromCenter(touch.pageX, touch.pageY);
+
+                    tp.push({ touch, angle });
+                }
+
+                return tp;
+            });
+        };
+
+        const handleTouchMove = (e) => {
+            e.preventDefault();
+
+            setTouchPoints(tp => {
+                tp = tp.slice();
+
+                // move existing TouchCircle with same key
+                for (var i = 0; i < e.changedTouches.length; i++) {
+                    const touch = e.changedTouches[i];
+                    const index = getTouchIndexById(tp, touch);
+                    if (index < 0) continue;
+                    tp[index].touch = touch;
+                    tp[index].angle = getAngleFromCenter(touch.pageX, touch.pageY);
+                }
+
+                return tp;
+            });
+        };
+
+        const handleTouchEnd = (e) => {
+            e.preventDefault();
+
+            setTouchPoints(tp => {
+                tp = tp.slice();
+
+                // delete existing TouchCircle with same key
+                for (var i = 0; i < e.changedTouches.length; i++) {
+                    const touch = e.changedTouches[i];
+                    const index = getTouchIndexById(tp, touch);
+                    if (index < 0) continue;
+                    tp.splice(index, 1);
+                }
+
+                return tp;
+            });
+        };
+
+        console.log('add touch listeners');
+        svgRef.addEventListener('touchstart', handleTouchStart, { passive: false });
+        svgRef.addEventListener('touchmove', handleTouchMove, { passive: false });
+        svgRef.addEventListener('touchcancel', handleTouchEnd, { passive: false });
+        svgRef.addEventListener('touchend', handleTouchEnd, { passive: false });
 
         return () => {
-            console.log('removing event listeners');
-            window.removeEventListener('touchstart', handleTouchStart, { passive: false });
-            window.removeEventListener('touchend', handleTouchEnd, { passive: false });
-            window.removeEventListener('touchcancel', handleTouchEnd, { passive: false });
-            window.removeEventListener('touchmove', handleTouchMove, { passive: false });
+            console.log('remove touch listeners');
+            svgRef.removeEventListener('touchstart', handleTouchStart, { passive: false });
+            svgRef.removeEventListener('touchmove', handleTouchMove, { passive: false });
+            svgRef.removeEventListener('touchend', handleTouchEnd, { passive: false });
+            svgRef.removeEventListener('touchcancel', handleTouchEnd, { passive: false });
         }
-    });
-
-    const handleTouchStart = useCallback((e) => {
-        e.preventDefault();
-
-        const tp = touchPoints.slice();
-
-        // note e.changedTouches is a TouchList not an array
-        // so we can't map over it
-        for (var i = 0; i < e.changedTouches.length; i++) {
-            const touch = e.changedTouches[i];
-            const angle = getAngleFromCenter(touch.pageX, touch.pageY);
-
-            tp.push({
-                touch,
-                angle,
-            });
-        }
-        setTouchPoints(tp);
-    }, [touchPoints, setTouchPoints]);
-
-    const handleTouchMove = useCallback((e) => {
-        e.preventDefault();
-
-        const tp = touchPoints.slice();
-
-        for (var i = 0; i < e.changedTouches.length; i++) {
-            const touch = getTouchById(tp, e.changedTouches[i].identifier);
-            if (!touch) continue;
-            touch.touch = e.changedTouches[i];
-            touch.angle = getAngleFromCenter(touch.touch.pageX, touch.touch.pageY);
-        }
-
-        setTouchPoints(tp);
-    }, [touchPoints, setTouchPoints]);
-
-    const handleTouchEnd = useCallback((e) => {
-        e.preventDefault();
-
-        const tp = touchPoints.slice();
-
-        for (var i = 0; i < e.changedTouches.length; i++) {
-            const touch = getTouchById(tp, e.changedTouches[i].identifier);
-            const index = tp.indexOf(touch);
-            tp.splice(index, 1);
-        }
-
-        setTouchPoints(tp);
-    }, [touchPoints, setTouchPoints]);
-
+    }, []);// eslint-disable-next-line react-hooks/exhaustive-deps
 
     // TODO add udpate if size changes using shouldComponentUpdate
 
     return (
         <svg 
+            ref={ svg }
             xmlns={ vars.SVG_NS }
             width={ window.innerWidth }
             height={ window.innerHeight }
