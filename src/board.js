@@ -1,104 +1,113 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import TouchCircle from './touchCircle';
 import vars from './vars';
 
-export default class Board extends React.Component {
-    constructor(props) {
-        super(props);
+export default function Board(props) {
+    const [touchPoints, setTouchPoints] = useState([]);
+    const svg = useRef();
 
-        this.state = {
-            touchPoints: [ ],
-            countdownIntervalID: 0,
-            countdown: 0,
+    useEffect(() => {
+        const svgRef = svg.current;
+
+        const handleTouchStart = (e) => {
+            e.preventDefault();
+
+            // use functional version of mutator
+            setTouchPoints(tp => {
+                // duplicate array
+                tp = tp.slice();
+
+                // note e.changedTouches is a TouchList not an array
+                // so we can't map over it
+                for (var i = 0; i < e.changedTouches.length; i++) {
+                    const touch = e.changedTouches[i];
+                    const angle = getAngleFromCenter(touch.pageX, touch.pageY);
+
+                    tp.push({ touch, angle });
+                }
+
+                return tp;
+            });
         };
 
-        this.handleTouchStart = this.handleTouchStart.bind(this);
-        this.handleTouchMove = this.handleTouchMove.bind(this);
-        this.handleTouchEnd = this.handleTouchEnd.bind(this);
-    }
+        const handleTouchMove = (e) => {
+            e.preventDefault();
 
-    componentDidMount() {
-        // to stop the built in browser gesture interfering with the multitouch
-        // events we need to turn off passive events for the touch which can
-        // only be done in a lifecycle hook (this code was moved from the svg
-        // declaration)
-        window.addEventListener('touchstart', this.handleTouchStart, { passive: false });
-        window.addEventListener('touchend', this.handleTouchEnd, { passive: false });
-        window.addEventListener('touchcancel', this.handleTouchEnd, { passive: false });
-        window.addEventListener('touchmove', this.handleTouchMove, { passive: false });
-    }
+            setTouchPoints(tp => {
+                tp = tp.slice();
 
-    handleTouchStart(e) {
-        e.preventDefault();
-        const touchPoints = this.state.touchPoints.slice();
+                // move existing TouchCircle with same key
+                for (var i = 0; i < e.changedTouches.length; i++) {
+                    const touch = e.changedTouches[i];
+                    const index = getTouchIndexById(tp, touch);
+                    if (index < 0) continue;
+                    tp[index].touch = touch;
+                    tp[index].angle = getAngleFromCenter(touch.pageX, touch.pageY);
+                }
 
-        // note e.changedTouches is a TouchList not an array
-        // so we can't map over it
-        for (var i = 0; i < e.changedTouches.length; i++) {
-            const touch = e.changedTouches[i];
-            const angle = getAngleFromCenter(touch.pageX, touch.pageY);
-
-            touchPoints.push({
-                touch,
-                angle,
+                return tp;
             });
+        };
+
+        const handleTouchEnd = (e) => {
+            e.preventDefault();
+
+            setTouchPoints(tp => {
+                tp = tp.slice();
+
+                // delete existing TouchCircle with same key
+                for (var i = 0; i < e.changedTouches.length; i++) {
+                    const touch = e.changedTouches[i];
+                    const index = getTouchIndexById(tp, touch);
+                    if (index < 0) continue;
+                    tp.splice(index, 1);
+                }
+
+                return tp;
+            });
+        };
+
+        console.log('add touch listeners');
+        svgRef.addEventListener('touchstart', handleTouchStart, { passive: false });
+        svgRef.addEventListener('touchmove', handleTouchMove, { passive: false });
+        svgRef.addEventListener('touchcancel', handleTouchEnd, { passive: false });
+        svgRef.addEventListener('touchend', handleTouchEnd, { passive: false });
+
+        return () => {
+            console.log('remove touch listeners');
+            svgRef.removeEventListener('touchstart', handleTouchStart, { passive: false });
+            svgRef.removeEventListener('touchmove', handleTouchMove, { passive: false });
+            svgRef.removeEventListener('touchend', handleTouchEnd, { passive: false });
+            svgRef.removeEventListener('touchcancel', handleTouchEnd, { passive: false });
         }
-        this.setState({ touchPoints });
-    }
-
-    handleTouchMove(e) {
-        e.preventDefault();
-        const touchPoints = this.state.touchPoints.slice();
-
-        for (var i = 0; i < e.changedTouches.length; i++) {
-            const touch = getTouchById(touchPoints, e.changedTouches[i].identifier);
-            if (!touch) continue;
-            touch.touch = e.changedTouches[i];
-            touch.angle = getAngleFromCenter(touch.touch.pageX, touch.touch.pageY);
-        }
-
-        this.setState({ touchPoints });
-    }
-
-    handleTouchEnd(e) {
-        e.preventDefault();
-        const touchPoints = this.state.touchPoints.slice();
-
-        for (var i = 0; i < e.changedTouches.length; i++) {
-            const touch = getTouchById(touchPoints, e.changedTouches[i].identifier);
-            const index = touchPoints.indexOf(touch);
-            touchPoints.splice(index, 1);
-        }
-
-        this.setState({ touchPoints });
-    }
+    }, []);// eslint-disable-next-line react-hooks/exhaustive-deps
 
     // TODO add udpate if size changes using shouldComponentUpdate
 
-    render() {
-        const touchPoints = this.state.touchPoints.map(touchpoint =>
-            <TouchCircle 
-                key={ touchpoint.touch.identifier }
-                cx={ touchpoint.touch.pageX }
-                cy={ touchpoint.touch.pageY }
-                colour={ generateColour() }
-            />
-        );
-
-        return (
-            <svg 
-                xmlns={ vars.SVG_NS }
-                width={ window.innerWidth }
-                height={ window.innerHeight }
-            >
-                { touchPoints }
-            </svg>
-        );
-    }
+    return (
+        <svg 
+            ref={ svg }
+            xmlns={ vars.SVG_NS }
+            width={ window.innerWidth }
+            height={ window.innerHeight }
+        >
+            { 
+                touchPoints.map(touchpoint =>
+                    <TouchCircle 
+                        key={ touchpoint.touch.identifier }
+                        cx={ touchpoint.touch.pageX }
+                        cy={ touchpoint.touch.pageY }
+                        colour={ generateColour() }
+                    />
+                )
+            }
+        </svg>
+    );
 }
 
 const generateColour = () => vars.COLOURS[Math.ceil(Math.random() * vars.COLOURS.length) - 1];
-const getTouchById = (touchPoints, id) => touchPoints.filter(item => item.touch.identifier === id)[0];
+const getTouchIndexById = (touchPoints, newTouch) => touchPoints.findIndex(t => t.touch.identifier === newTouch.identifier);
+
 const getCenterPoint = () => {
     return {
         x: (window.innerWidth / 2), 
