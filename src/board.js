@@ -82,8 +82,6 @@ export default function Board(props) {
         }
     }, [setTouchPoints]);// eslint-disable-next-line react-hooks/exhaustive-deps
 
-    // TODO add udpate if size changes using shouldComponentUpdate
-
     return (
         <svg 
             ref={ svg }
