@@ -92,6 +92,26 @@ export default function Board() {
         });
     }, [setTouchPoints, setCount]);
 
+    // TODO this is situational - use innerWidth/Height to get the actual angles
+    // to the corners of the screen
+    // TODO move so touchpoints aren't touching each other
+    const moveTouchPointsToNearestEdge = () => {
+        setTouchPoints(tps => touchPoints.map(tp => {
+            if (tp.angle > 325 || tp.angle < 35) {
+                tp.touch.x = 0;
+            } else if (tp.angle < 145) {
+                tp.touch.y = 0;
+            } else if (tp.angle < 215) {
+                tp.touch.x = window.innerWidth;
+            } else {
+                tp.touch.y = window.innerHeight;
+            }
+            tp.active = false;
+            return tp;
+        }));
+
+    };
+
     const reducer = (state, action) => {
         // TODO as svgRef is the root element, can we assume that the
         // current one is the only one?
@@ -117,29 +137,12 @@ export default function Board() {
                 svg.current.removeEventListener('touchmove', handleTouchMove, { passive: false });
                 svg.current.removeEventListener('touchend', handleTouchEnd, { passive: false });
                 svg.current.removeEventListener('touchcancel', handleTouchEnd, { passive: false });
+                setTouchPoints(getPlayerOrder(touchPoints));
                 moveTouchPointsToNearestEdge();
                 return 'countdown complete';
             default :
                 return 'waiting...';
         }
-    };
-
-    // TODO this is situational - use innerWidth/Height to get the actual angles
-    // to the corners of the screen
-    const moveTouchPointsToNearestEdge = () => {
-        setTouchPoints(tps => touchPoints.map(tp => {
-            if (tp.angle > 325 || tp.angle < 35) {
-                tp.touch.x = 0;
-            } else if (tp.angle < 145) {
-                tp.touch.y = 0;
-            } else if (tp.angle < 215) {
-                tp.touch.x = window.innerWidth;
-            } else {
-                tp.touch.y = window.innerHeight;
-            }
-            return tp;
-        }));
-
     };
 
     const [state, dispatch] = useReducer(reducer, false);
@@ -161,7 +164,7 @@ export default function Board() {
         }, 1000);
 
         return () => clearInterval(id);
-    }, []);
+    }, [setCount]);
 
     useEffect(() => {
         dispatch({ type: STATE_INIT });
@@ -218,4 +221,17 @@ const getAngleFromCenter = (x, y) => {
     const center = getCenterPoint();
     const angle = Math.atan2(y - center.y, x - center.x) * 180 / Math.PI + 180;
     return angle;
+};
+
+const getPlayerOrder = (touchPoints) => {
+    console.log('start');
+    const tp = touchPoints.slice();
+    console.log(tp.map(i => i.angle));
+    tp.sort((a, b) => a.angle > b.angle ? 1 : -1);
+    console.log(tp.map(i => i.angle));
+    const selectionIndex = Math.floor(tp.length * Math.random());
+    tp.splice(0, 0, ...tp.splice(selectionIndex));
+    console.log(tp.map(i => i.angle));
+    console.log('fin');
+    return tp;
 };
