@@ -139,6 +139,11 @@ export default function Board() {
                 svg.current.removeEventListener('touchcancel', handleTouchEnd, { passive: false });
                 setTouchPoints(getPlayerOrder(touchPoints));
                 moveTouchPointsToNearestEdge();
+                setTouchPoints(t => {
+                    const tp = t.slice();
+                    tp[0].isActive = true;
+                    return tp;
+                });
                 return 'countdown complete';
             default :
                 return 'waiting...';
