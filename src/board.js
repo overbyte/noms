@@ -124,13 +124,15 @@ export default function Board() {
         }
     };
 
+    // TODO this is situational - use innerWidth/Height to get the actual angles
+    // to the corners of the screen
     const moveTouchPointsToNearestEdge = () => {
         setTouchPoints(tps => touchPoints.map(tp => {
-            if (tp.angle > 315 || tp.angle < 45) {
+            if (tp.angle > 325 || tp.angle < 35) {
                 tp.touch.x = 0;
-            } else if (tp.angle < 135) {
+            } else if (tp.angle < 145) {
                 tp.touch.y = 0;
-            } else if (tp.angle < 225) {
+            } else if (tp.angle < 215) {
                 tp.touch.x = window.innerWidth;
             } else {
                 tp.touch.y = window.innerHeight;
