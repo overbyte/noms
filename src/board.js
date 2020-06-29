@@ -18,8 +18,12 @@ export default function Board(props) {
             // note e.changedTouches is a TouchList not an array
             // so we can't map over it
             for (var i = 0; i < e.changedTouches.length; i++) {
-                const touch = e.changedTouches[i];
-                const angle = getAngleFromCenter(touch.pageX, touch.pageY);
+                const touch = {
+                    id: e.changedTouches[i].identifier,
+                    x: e.changedTouches[i].pageX,
+                    y: e.changedTouches[i].pageY,
+                };
+                const angle = getAngleFromCenter(touch.x, touch.y);
 
                 tp.push({ touch, angle });
             }
@@ -40,11 +44,15 @@ export default function Board(props) {
 
             // move existing TouchCircle with same key
             for (var i = 0; i < e.changedTouches.length; i++) {
-                const touch = e.changedTouches[i];
+                const touch = {
+                    id: e.changedTouches[i].identifier,
+                    x: e.changedTouches[i].pageX,
+                    y: e.changedTouches[i].pageY,
+                };
                 const index = getTouchIndexById(tp, touch);
                 if (index < 0) continue;
                 tp[index].touch = touch;
-                tp[index].angle = getAngleFromCenter(touch.pageX, touch.pageY);
+                tp[index].angle = getAngleFromCenter(touch.x, touch.y);
             }
 
             return tp;
@@ -59,7 +67,11 @@ export default function Board(props) {
 
             // delete existing TouchCircle with same key
             for (var i = 0; i < e.changedTouches.length; i++) {
-                const touch = e.changedTouches[i];
+                const touch = {
+                    id: e.changedTouches[i].identifier,
+                    x: e.changedTouches[i].pageX,
+                    y: e.changedTouches[i].pageY,
+                };
                 const index = getTouchIndexById(tp, touch);
                 if (index < 0) continue;
                 tp.splice(index, 1);
@@ -80,30 +92,47 @@ export default function Board(props) {
         // current one is the only one?
 
         switch (action.type) {
-            case 'init' :
+            case STATE_INIT :
                 svg.current.addEventListener('touchstart', handleTouchStart, { passive: false });
                 svg.current.addEventListener('touchmove', handleTouchMove, { passive: false });
                 svg.current.addEventListener('touchcancel', handleTouchEnd, { passive: false });
                 svg.current.addEventListener('touchend', handleTouchEnd, { passive: false });
                 return 'waiting...';
-            case 'destroy' : 
+            case STATE_DESTROY : 
                 // can't fall through so duplicate event removal
                 svg.current.removeEventListener('touchstart', handleTouchStart, { passive: false });
                 svg.current.removeEventListener('touchmove', handleTouchMove, { passive: false });
                 svg.current.removeEventListener('touchend', handleTouchEnd, { passive: false });
                 svg.current.removeEventListener('touchcancel', handleTouchEnd, { passive: false });
                 return 'destroying component';
-            case 'counting down' :
+            case STATE_COUNTDOWN :
                 return 'counting down';
-            case 'countdown complete' :
+            case STATE_COUNTCOMPLETE :
                 svg.current.removeEventListener('touchstart', handleTouchStart, { passive: false });
                 svg.current.removeEventListener('touchmove', handleTouchMove, { passive: false });
                 svg.current.removeEventListener('touchend', handleTouchEnd, { passive: false });
                 svg.current.removeEventListener('touchcancel', handleTouchEnd, { passive: false });
+                moveTouchPointsToNearestEdge();
                 return 'countdown complete';
             default :
                 return 'waiting...';
         }
+    };
+
+    const moveTouchPointsToNearestEdge = () => {
+        setTouchPoints(tps => touchPoints.map(tp => {
+            if (tp.angle > 315 || tp.angle < 45) {
+                tp.touch.x = 0;
+            } else if (tp.angle < 135) {
+                tp.touch.y = 0;
+            } else if (tp.angle < 225) {
+                tp.touch.x = window.innerWidth;
+            } else {
+                tp.touch.y = window.innerHeight;
+            }
+            return tp;
+        }));
+
     };
 
     const [state, dispatch] = useReducer(reducer, false);
@@ -141,7 +170,12 @@ export default function Board(props) {
             <div style={{
                 color: 'white',
                 position: 'absolute'
-            }}>{ count }, { state }</div>
+            }}>
+                <p>{ count }, { state }</p>
+                <ul>
+                    { touchPoints.map(tp => <li key={ tp.touch.id }>{ tp.angle }</li>) } 
+                </ul>
+            </div>
             <svg 
                 ref={ svg }
                 xmlns={ vars.SVG_NS }
@@ -151,10 +185,11 @@ export default function Board(props) {
                 { 
                     touchPoints.map(touchpoint =>
                         <TouchCircle 
-                            key={ touchpoint.touch.identifier }
-                            cx={ touchpoint.touch.pageX }
-                            cy={ touchpoint.touch.pageY }
+                            key={ touchpoint.touch.id }
+                            cx={ touchpoint.touch.x }
+                            cy={ touchpoint.touch.y }
                             colour={ generateColour() }
+                            move={ state === 'countdown complete' }
                         />
                     )
                 }
@@ -164,7 +199,7 @@ export default function Board(props) {
 }
 
 const generateColour = () => vars.COLOURS[Math.ceil(Math.random() * vars.COLOURS.length) - 1];
-const getTouchIndexById = (touchPoints, newTouch) => touchPoints.findIndex(t => t.touch.identifier === newTouch.identifier);
+const getTouchIndexById = (touchPoints, newTouch) => touchPoints.findIndex(t => t.touch.id === newTouch.id);
 
 const getCenterPoint = () => {
     return {
