@@ -2,6 +2,11 @@ import React, { useState, useEffect, useRef, useReducer, useCallback } from 'rea
 import TouchCircle from './touchCircle';
 import vars from './vars';
 
+const STATE_INIT = 'init';
+const STATE_DESTROY = 'destroy';
+const STATE_COUNTDOWN = 'counting down';
+const STATE_COUNTCOMPLETE = 'counting complete';
+
 export default function Board(props) {
     const [touchPoints, setTouchPoints] = useState([]);
     const [count, setCount] = useState(-10);
@@ -144,11 +149,11 @@ export default function Board(props) {
                     dispatch({ type: 'wait' });
                     return -10;
                 } else if (c <= 0) {
+                    dispatch({ type: STATE_COUNTCOMPLETE });
                     clearInterval(id);
-                    dispatch({ type: 'countdown complete' });
                     return 0;
                 }
-                dispatch({ type: 'counting down' });
+                dispatch({ type: STATE_COUNTDOWN });
                 return --c;
             });
         }, 1000);
@@ -156,12 +161,11 @@ export default function Board(props) {
         return () => clearInterval(id);
     }, []);
 
-
     useEffect(() => {
-        dispatch({ type: 'init' });
+        dispatch({ type: STATE_INIT });
 
         return () => {
-            dispatch({ type: 'destroy' });
+            dispatch({ type: STATE_DESTROY });
         }
     }, []);
 
