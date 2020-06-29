@@ -1,9 +1,15 @@
-.touch-gfx {
+.touchcircle {
     animation: pulse 0.5s ease-in-out infinite alternate;
 }
 
-.touch-gfx.move {
+.touchcircle.move {
     transition: all 0.5s ease-in-out;
+    transform: scale(1);
+    animation: none;
+}
+
+.touchcircle.active {
+    animation: pulse 0.5s ease-in-out infinite alternate;
 }
 
 .touch-num {

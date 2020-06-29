@@ -7,7 +7,7 @@ const STATE_DESTROY = 'destroy';
 const STATE_COUNTDOWN = 'counting down';
 const STATE_COUNTCOMPLETE = 'counting complete';
 
-export default function Board(props) {
+export default function Board() {
     const [touchPoints, setTouchPoints] = useState([]);
     const [count, setCount] = useState(-10);
     const svg = useRef();
@@ -192,7 +192,7 @@ export default function Board(props) {
                             key={ touchpoint.touch.id }
                             cx={ touchpoint.touch.x }
                             cy={ touchpoint.touch.y }
-                            colour={ generateColour() }
+                            col={ generateColour() }
                             move={ state === 'countdown complete' }
                         />
                     )

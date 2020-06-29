@@ -1,20 +1,27 @@
 import React, { useState } from 'react';
+import classnames from 'classnames';
 import vars from './vars';
 import './touchCircle.css';
 
-export default function TouchCircle(props) {
-    const [colour] = useState(props.colour);
+export default function TouchCircle({ cx, cy, col, move, active }) {
+    const [colour] = useState(col);
 
     return (
         <circle
             xmlns={ vars.SVG_NS }
-            cx={ props.cx }
-            cy={ props.cy }
+            cx={ cx }
+            cy={ cy }
             r={ vars.TOUCH_RADIUS }
             fill={ colour }
-            className={ `touch-gfx ${props.move ? 'move' : ''}` }
+            className={
+                classnames({
+                    touchcircle: true,
+                    move: move,
+                    active: active,
+                })
+            }
             style={{
-                transformOrigin: `${props.cx}px ${props.cy}px`
+                transformOrigin: `${cx}px ${cy}px`
             }}
         />
 
