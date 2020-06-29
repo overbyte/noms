@@ -199,6 +199,7 @@ export default function Board() {
                             cy={ touchpoint.touch.y }
                             col={ generateColour() }
                             move={ state === 'countdown complete' }
+                            active={ touchpoint.active }
                         />
                     )
                 }
