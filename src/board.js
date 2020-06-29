@@ -29,8 +29,9 @@ export default function Board() {
                     y: e.changedTouches[i].pageY,
                 };
                 const angle = getAngleFromCenter(touch.x, touch.y);
+                const isActive = false;
 
-                tp.push({ touch, angle });
+                tp.push({ touch, angle, isActive });
             }
 
             if (tp.length >= vars.MIN_TOUCHPOINTS) {
@@ -106,7 +107,6 @@ export default function Board() {
             } else {
                 tp.touch.y = window.innerHeight;
             }
-            tp.active = false;
             return tp;
         }));
 
@@ -199,7 +199,7 @@ export default function Board() {
                             cy={ touchpoint.touch.y }
                             col={ generateColour() }
                             move={ state === 'countdown complete' }
-                            active={ touchpoint.active }
+                            active={ touchpoint.isActive }
                         />
                     )
                 }
