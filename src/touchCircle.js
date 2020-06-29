@@ -12,7 +12,7 @@ export default function TouchCircle(props) {
             cy={ props.cy }
             r={ vars.TOUCH_RADIUS }
             fill={ colour }
-            className="touch-gfx"
+            className={ `touch-gfx ${props.move ? 'move' : ''}` }
             style={{
                 transformOrigin: `${props.cx}px ${props.cy}px`
             }}
