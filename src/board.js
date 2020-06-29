@@ -112,7 +112,7 @@ export default function Board() {
 
     };
 
-    const reducer = (state, action) => {
+    const stateReducer = (state, action) => {
         // TODO as svgRef is the root element, can we assume that the
         // current one is the only one?
 
@@ -145,20 +145,20 @@ export default function Board() {
         }
     };
 
-    const [state, dispatch] = useReducer(reducer, false);
+    const [state, dispatchState] = useReducer(stateReducer, false);
 
     useEffect(() => {
         const id = setInterval(() => {
             setCount(c => {
                 if (c <= -10) {
-                    dispatch({ type: 'wait' });
+                    dispatchState({ type: 'wait' });
                     return -10;
                 } else if (c <= 0) {
-                    dispatch({ type: STATE_COUNTCOMPLETE });
+                    dispatchState({ type: STATE_COUNTCOMPLETE });
                     clearInterval(id);
                     return 0;
                 }
-                dispatch({ type: STATE_COUNTDOWN });
+                dispatchState({ type: STATE_COUNTDOWN });
                 return --c;
             });
         }, 1000);
@@ -167,10 +167,10 @@ export default function Board() {
     }, [setCount]);
 
     useEffect(() => {
-        dispatch({ type: STATE_INIT });
+        dispatchState({ type: STATE_INIT });
 
         return () => {
-            dispatch({ type: STATE_DESTROY });
+            dispatchState({ type: STATE_DESTROY });
         }
     }, []);
 
@@ -225,14 +225,9 @@ const getAngleFromCenter = (x, y) => {
 };
 
 const getPlayerOrder = (touchPoints) => {
-    console.log('start');
     const tp = touchPoints.slice();
-    console.log(tp.map(i => i.angle));
     tp.sort((a, b) => a.angle > b.angle ? 1 : -1);
-    console.log(tp.map(i => i.angle));
     const selectionIndex = Math.floor(tp.length * Math.random());
     tp.splice(0, 0, ...tp.splice(selectionIndex));
-    console.log(tp.map(i => i.angle));
-    console.log('fin');
     return tp;
 };
