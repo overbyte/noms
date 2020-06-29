@@ -178,11 +178,11 @@ export default function Board() {
         <div>
             <div style={{
                 color: 'white',
-                position: 'absolute'
+                position: 'fixed'
             }}>
                 <p>{ count }, { state }</p>
                 <ul>
-                    { touchPoints.map(tp => <li key={ tp.touch.id }>{ tp.angle }</li>) } 
+                    { touchPoints.map((tp, index) => <li key={ tp.touch.id }>{ index } { tp.angle }</li>) } 
                 </ul>
             </div>
             <svg 
