@@ -1,6 +1,6 @@
 export default {
     TOUCH_RADIUS: '80',
-    COUNTDOWN_MAX: 3,
+    MAX_COUNTDOWN: 3,
     MIN_TOUCHPOINTS: 2,
     SVG_NS: 'http://www.w3.org/2000/svg',
     COLOURS: [
