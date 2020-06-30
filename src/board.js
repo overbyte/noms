@@ -97,14 +97,13 @@ export default function Board() {
     };
     // TODO man there's a lot of code here - break up into functions at least
     const [touchPoints, dispatchTouches] = useReducer((tp, { type, touches }) => {
-        console.log('received tp dispatch', type, touches);
         switch(type) {
             case TP_ADD :
-                return addTouchPoints(tp, touches);
+                return addTouchPoints(tp.slice(), touches);
             case TP_MOVE :
-                return moveTouchPoints(tp, touches);
+                return moveTouchPoints(tp.slice(), touches);
             case TP_DELETE :
-                return removeTouchPoints(tp, touches);
+                return removeTouchPoints(tp.slice(), touches);
             case TP_SETUP_GAME :
                 return setupGame(tp);
             default:
@@ -114,19 +113,16 @@ export default function Board() {
 
     const handleTouchStart = useCallback((e) => {
         e.preventDefault();
-        console.log('sending start event');
         dispatchTouches({ type: TP_ADD, touches: e.changedTouches});
     }, []);
 
     const handleTouchMove = useCallback((e) => {
         e.preventDefault();
-        console.log('sending move event');
         dispatchTouches({ type: TP_MOVE, touches: e.changedTouches});
     }, []);
 
     const handleTouchEnd = useCallback((e) => {
         e.preventDefault();
-        console.log('sending end event');
         dispatchTouches({ type: TP_DELETE, touches: e.changedTouches});
     }, []);
 
@@ -211,7 +207,7 @@ export default function Board() {
                             key={ touchpoint.touch.id }
                             cx={ touchpoint.touch.x }
                             cy={ touchpoint.touch.y }
-                            col={ generateColour() }
+                            col={ vars.generateColour() }
                             move={ state === 'countdown complete' }
                             active={ touchpoint.isActive }
                         />
@@ -222,7 +218,6 @@ export default function Board() {
     );
 }
 
-const generateColour = () => vars.COLOURS[Math.ceil(Math.random() * vars.COLOURS.length) - 1];
 const getTouchIndexById = (touchPoints, newTouch) => touchPoints.findIndex(t => t.touch.id === newTouch.id);
 
 const getCenterPoint = () => {
