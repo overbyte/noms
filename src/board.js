@@ -35,7 +35,7 @@ export default function Board() {
         if (tp.length >= vars.MIN_TOUCHPOINTS) {
             setCount(vars.MAX_COUNTDOWN);
         }
-        return [...tp];
+        return tp;
     };
 
     const moveTouchPoints = (tp, touches) => {
@@ -51,7 +51,7 @@ export default function Board() {
             tp[index].touch = touch;
             tp[index].angle = getAngleFromCenter(touch.x, touch.y);
         }
-        return [...tp];
+        return tp;
     };
 
     const removeTouchPoints = (tp, touches) => {
@@ -73,14 +73,14 @@ export default function Board() {
             setCount(-10);
         }
 
-        return [...tp];
+        return tp;
     }
 
-    const setupGame = tp => {
+    const moveToEdges = tp => {
         // TODO this is situational - use innerWidth/Height to get the actual angles
         // to the corners of the screen
         // TODO move so touchpoints aren't touching each other
-        tp = tp.map(t => {
+        return tp.map(t => {
             if (t.angle > 325 || t.angle < 35) {
                 t.touch.x = 0;
             } else if (t.angle < 145) {
@@ -92,8 +92,15 @@ export default function Board() {
             }
             return t;
         });
-        tp = getPlayerOrder(tp);
-        return [...tp];
+    };
+
+    const getPlayerOrder = tp => {
+        // sort by angle
+        tp.sort((a, b) => a.angle > b.angle ? 1 : -1);
+        // move a random number of items to front of array
+        const selectionIndex = Math.floor(tp.length * Math.random());
+        tp.splice(0, 0, ...tp.splice(selectionIndex));
+        return tp;
     };
 
     const initialTouchPoints = [];
@@ -103,10 +110,12 @@ export default function Board() {
                 return addTouchPoints(tp.slice(), touches);
             case TP_MOVE :
                 return moveTouchPoints(tp.slice(), touches);
-            case TP_DELETE :
+            case TP_REMOVE :
                 return removeTouchPoints(tp.slice(), touches);
-            case TP_SETUP_GAME :
-                return setupGame(tp);
+            case TP_CHOOSE_PLAYER :
+                return getPlayerOrder(tp.slice());
+            case TP_MOVE_TO_EDGES :
+                return moveToEdges(tp.slice());
             default:
                 throw new Error('Unrecognised touchpoint event type');
         }
@@ -234,10 +243,3 @@ const getAngleFromCenter = (x, y) => {
     return angle;
 };
 
-const getPlayerOrder = (touchPoints) => {
-    const tp = touchPoints.slice();
-    tp.sort((a, b) => a.angle > b.angle ? 1 : -1);
-    const selectionIndex = Math.floor(tp.length * Math.random());
-    tp.splice(0, 0, ...tp.splice(selectionIndex));
-    return tp;
-};
