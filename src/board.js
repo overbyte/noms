@@ -2,15 +2,17 @@ import React, { useState, useEffect, useRef, useReducer, useCallback } from 'rea
 import TouchCircle from './touchCircle';
 import vars from './vars';
 
-const STATE_INIT = 'init';
-const STATE_DESTROY = 'destroy';
-const STATE_COUNTDOWN = 'counting down';
+const STATE_INIT = 'listening...';
+const STATE_DESTROY = 'destroying...';
+const STATE_COUNTDOWN = 'counting down...';
 const STATE_COUNTCOMPLETE = 'counting complete';
+const STATE_WAIT = 'STATE_WAIT';
 
 const TP_ADD = 'TP_ADD';
 const TP_MOVE = 'TP_MOVE';
-const TP_DELETE = 'TP_DELETE';
-const TP_SETUP_GAME = 'TP_SETUP_GAME';
+const TP_REMOVE = 'TP_REMOVE';
+const TP_MOVE_TO_EDGES = 'TP_MOVE_TO_EDGES';
+const TP_CHOOSE_PLAYER = 'TP_CHOOSE_PLAYER';
 
 export default function Board() {
     const [count, setCount] = useState(-10);
