@@ -16,5 +16,9 @@ export default {
         '#7700ff',
         '#ff00ff',
         '#ff0077',
-    ]
+    ],
+    generateColour() {
+        return this.COLOURS[Math.ceil(Math.random() * this.COLOURS.length) - 1];
+    }
 };
+
