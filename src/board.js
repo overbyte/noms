@@ -17,80 +17,98 @@ export default function Board() {
     const svg = useRef();
 
     const initialTouchPoints = [];
+
+    const addTouchPoints = (tp, touches) => {
+        // note e.changedTouches is a TouchList not an array
+        // so we can't map over it
+        for (var i = 0; i < touches.length; i++) {
+            const touch = {
+                id: touches[i].identifier,
+                x: touches[i].pageX,
+                y: touches[i].pageY,
+            };
+            const angle = getAngleFromCenter(touch.x, touch.y);
+            const isActive = false;
+
+            tp.push({ touch, angle, isActive });
+        }
+        if (tp.length >= vars.MIN_TOUCHPOINTS) {
+            setCount(vars.MAX_COUNTDOWN);
+        }
+        return [...tp];
+    };
+
+    const moveTouchPoints = (tp, touches) => {
+        // move existing TouchCircle with same key
+        for (var i = 0; i < touches.length; i++) {
+            const touch = {
+                id: touches[i].identifier,
+                x: touches[i].pageX,
+                y: touches[i].pageY,
+            };
+            const index = getTouchIndexById(tp, touch);
+            if (index < 0) continue;
+            tp[index].touch = touch;
+            tp[index].angle = getAngleFromCenter(touch.x, touch.y);
+        }
+        return [...tp];
+    };
+
+    const removeTouchPoints = (tp, touches) => {
+        // delete existing TouchCircle with same key
+        for (var i = 0; i < touches.length; i++) {
+            const touch = {
+                id: touches[i].identifier,
+                x: touches[i].pageX,
+                y: touches[i].pageY,
+            };
+            const index = getTouchIndexById(tp, touch);
+            if (index < 0) continue;
+            tp.splice(index, 1);
+        }
+
+        if (tp.length >= vars.MIN_TOUCHPOINTS) {
+            setCount(vars.MAX_COUNTDOWN);
+        } else {
+            setCount(-10);
+        }
+
+        return [...tp];
+    }
+
+    const setupGame = tp => {
+        // TODO this is situational - use innerWidth/Height to get the actual angles
+        // to the corners of the screen
+        // TODO move so touchpoints aren't touching each other
+        tp = tp.map(t => {
+            if (t.angle > 325 || t.angle < 35) {
+                t.touch.x = 0;
+            } else if (t.angle < 145) {
+                t.touch.y = 0;
+            } else if (t.angle < 215) {
+                t.touch.x = window.innerWidth;
+            } else {
+                t.touch.y = window.innerHeight;
+            }
+            return t;
+        });
+        tp = getPlayerOrder(tp);
+        return [...tp];
+    };
     // TODO man there's a lot of code here - break up into functions at least
     const [touchPoints, dispatchTouches] = useReducer((tp, { type, touches }) => {
         console.log('received tp dispatch', type, touches);
         switch(type) {
             case TP_ADD :
-                // note e.changedTouches is a TouchList not an array
-                // so we can't map over it
-                for (var i = 0; i < touches.length; i++) {
-                    const touch = {
-                        id: touches[i].identifier,
-                        x: touches[i].pageX,
-                        y: touches[i].pageY,
-                    };
-                    const angle = getAngleFromCenter(touch.x, touch.y);
-                    const isActive = false;
-
-                    tp.push({ touch, angle, isActive });
-                }
-                if (tp.length >= vars.MIN_TOUCHPOINTS) {
-                    setCount(vars.MAX_COUNTDOWN);
-                }
-                return [...tp];
+                return addTouchPoints(tp, touches);
             case TP_MOVE :
-                // move existing TouchCircle with same key
-                for (var i = 0; i < touches.length; i++) {
-                    const touch = {
-                        id: touches[i].identifier,
-                        x: touches[i].pageX,
-                        y: touches[i].pageY,
-                    };
-                    const index = getTouchIndexById(tp, touch);
-                    if (index < 0) continue;
-                    tp[index].touch = touch;
-                    tp[index].angle = getAngleFromCenter(touch.x, touch.y);
-                }
-                return [...tp];
+                return moveTouchPoints(tp, touches);
             case TP_DELETE :
-                // delete existing TouchCircle with same key
-                for (var i = 0; i < touches.length; i++) {
-                    const touch = {
-                        id: touches[i].identifier,
-                        x: touches[i].pageX,
-                        y: touches[i].pageY,
-                    };
-                    const index = getTouchIndexById(tp, touch);
-                    if (index < 0) continue;
-                    tp.splice(index, 1);
-                }
-
-                if (tp.length >= vars.MIN_TOUCHPOINTS) {
-                    setCount(vars.MAX_COUNTDOWN);
-                } else {
-                    setCount(-10);
-                }
-
-                return [...tp];
+                return removeTouchPoints(tp, touches);
             case TP_SETUP_GAME :
-                // TODO this is situational - use innerWidth/Height to get the actual angles
-                // to the corners of the screen
-                // TODO move so touchpoints aren't touching each other
-                tp = tp.map(t => {
-                    if (t.angle > 325 || t.angle < 35) {
-                        t.touch.x = 0;
-                    } else if (t.angle < 145) {
-                        t.touch.y = 0;
-                    } else if (t.angle < 215) {
-                        t.touch.x = window.innerWidth;
-                    } else {
-                        t.touch.y = window.innerHeight;
-                    }
-                    return t;
-                });
-                tp = getPlayerOrder(tp);
-                return [...tp];
+                return setupGame(tp);
+            default:
+                throw new Error('Unrecognised touchpoint event type');
         }
     }, initialTouchPoints);
 
