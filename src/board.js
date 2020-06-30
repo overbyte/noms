@@ -133,45 +133,60 @@ export default function Board() {
 
     const handleTouchEnd = useCallback((e) => {
         e.preventDefault();
-        dispatchTouches({ type: TP_DELETE, touches: e.changedTouches});
+        dispatchTouches({ type: TP_REMOVE, touches: e.changedTouches});
     }, []);
+
+    const addTouchListeners = () => {
+        svg.current.addEventListener('touchstart', handleTouchStart, { passive: false });
+        svg.current.addEventListener('touchmove', handleTouchMove, { passive: false });
+        svg.current.addEventListener('touchcancel', handleTouchEnd, { passive: false });
+        svg.current.addEventListener('touchend', handleTouchEnd, { passive: false });
+    };
+
+    const removeTouchListeners = () => {
+        svg.current.removeEventListener('touchstart', handleTouchStart, { passive: false });
+        svg.current.removeEventListener('touchmove', handleTouchMove, { passive: false });
+        svg.current.removeEventListener('touchend', handleTouchEnd, { passive: false });
+        svg.current.removeEventListener('touchcancel', handleTouchEnd, { passive: false });
+    };
 
     const stateReducer = (state, action) => {
         switch (action.type) {
             case STATE_INIT :
-                svg.current.addEventListener('touchstart', handleTouchStart, { passive: false });
-                svg.current.addEventListener('touchmove', handleTouchMove, { passive: false });
-                svg.current.addEventListener('touchcancel', handleTouchEnd, { passive: false });
-                svg.current.addEventListener('touchend', handleTouchEnd, { passive: false });
+                addTouchListeners();
+                return 'adding listeners';
+            case STATE_WAIT :
                 return 'waiting...';
             case STATE_DESTROY : 
-                // can't fall through so duplicate event removal
-                svg.current.removeEventListener('touchstart', handleTouchStart, { passive: false });
-                svg.current.removeEventListener('touchmove', handleTouchMove, { passive: false });
-                svg.current.removeEventListener('touchend', handleTouchEnd, { passive: false });
-                svg.current.removeEventListener('touchcancel', handleTouchEnd, { passive: false });
+                removeTouchListeners();
                 return 'destroying component';
             case STATE_COUNTDOWN :
                 return 'counting down';
             case STATE_COUNTCOMPLETE :
-                svg.current.removeEventListener('touchstart', handleTouchStart, { passive: false });
-                svg.current.removeEventListener('touchmove', handleTouchMove, { passive: false });
-                svg.current.removeEventListener('touchend', handleTouchEnd, { passive: false });
-                svg.current.removeEventListener('touchcancel', handleTouchEnd, { passive: false });
-                dispatchTouches({ type: TP_SETUP_GAME });
+                removeTouchListeners();
                 return 'countdown complete';
             default :
-                return 'waiting...';
+                throw new Error('Unexpected state found');
         }
     };
 
     const [state, dispatchState] = useReducer(stateReducer, 'not started');
 
     useEffect(() => {
+        switch (state) {
+            case 'countdown complete' :
+                dispatchTouches({ type: TP_MOVE_TO_EDGES });
+                break;
+            default :
+                break;
+        }
+    }, [state]);
+
+    useEffect(() => {
         const id = setInterval(() => {
             setCount(c => {
                 if (c <= -10) {
-                    dispatchState({ type: 'wait' });
+                    dispatchState({ type: STATE_WAIT });
                     return -10;
                 } else if (c <= 0) {
                     dispatchState({ type: STATE_COUNTCOMPLETE });
