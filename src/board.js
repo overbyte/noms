@@ -7,115 +7,112 @@ const STATE_DESTROY = 'destroy';
 const STATE_COUNTDOWN = 'counting down';
 const STATE_COUNTCOMPLETE = 'counting complete';
 
+const TP_ADD = 'TP_ADD';
+const TP_MOVE = 'TP_MOVE';
+const TP_DELETE = 'TP_DELETE';
+const TP_SETUP_GAME = 'TP_SETUP_GAME';
+
 export default function Board() {
-    const [touchPoints, setTouchPoints] = useState([]);
     const [count, setCount] = useState(-10);
     const svg = useRef();
 
+    const initialTouchPoints = [];
+    // TODO man there's a lot of code here - break up into functions at least
+    const [touchPoints, dispatchTouches] = useReducer((tp, { type, touches }) => {
+        console.log('received tp dispatch', type, touches);
+        switch(type) {
+            case TP_ADD :
+                // note e.changedTouches is a TouchList not an array
+                // so we can't map over it
+                for (var i = 0; i < touches.length; i++) {
+                    const touch = {
+                        id: touches[i].identifier,
+                        x: touches[i].pageX,
+                        y: touches[i].pageY,
+                    };
+                    const angle = getAngleFromCenter(touch.x, touch.y);
+                    const isActive = false;
+
+                    tp.push({ touch, angle, isActive });
+                }
+                if (tp.length >= vars.MIN_TOUCHPOINTS) {
+                    setCount(vars.MAX_COUNTDOWN);
+                }
+                return [...tp];
+            case TP_MOVE :
+                // move existing TouchCircle with same key
+                for (var i = 0; i < touches.length; i++) {
+                    const touch = {
+                        id: touches[i].identifier,
+                        x: touches[i].pageX,
+                        y: touches[i].pageY,
+                    };
+                    const index = getTouchIndexById(tp, touch);
+                    if (index < 0) continue;
+                    tp[index].touch = touch;
+                    tp[index].angle = getAngleFromCenter(touch.x, touch.y);
+                }
+                return [...tp];
+            case TP_DELETE :
+                // delete existing TouchCircle with same key
+                for (var i = 0; i < touches.length; i++) {
+                    const touch = {
+                        id: touches[i].identifier,
+                        x: touches[i].pageX,
+                        y: touches[i].pageY,
+                    };
+                    const index = getTouchIndexById(tp, touch);
+                    if (index < 0) continue;
+                    tp.splice(index, 1);
+                }
+
+                if (tp.length >= vars.MIN_TOUCHPOINTS) {
+                    setCount(vars.MAX_COUNTDOWN);
+                } else {
+                    setCount(-10);
+                }
+
+                return [...tp];
+            case TP_SETUP_GAME :
+                // TODO this is situational - use innerWidth/Height to get the actual angles
+                // to the corners of the screen
+                // TODO move so touchpoints aren't touching each other
+                tp = tp.map(t => {
+                    if (t.angle > 325 || t.angle < 35) {
+                        t.touch.x = 0;
+                    } else if (t.angle < 145) {
+                        t.touch.y = 0;
+                    } else if (t.angle < 215) {
+                        t.touch.x = window.innerWidth;
+                    } else {
+                        t.touch.y = window.innerHeight;
+                    }
+                    return t;
+                });
+                tp = getPlayerOrder(tp);
+                return [...tp];
+        }
+    }, initialTouchPoints);
+
     const handleTouchStart = useCallback((e) => {
         e.preventDefault();
-
-        // use functional version of mutator
-        setTouchPoints(tp => {
-            // duplicate array
-            tp = tp.slice();
-
-            // note e.changedTouches is a TouchList not an array
-            // so we can't map over it
-            for (var i = 0; i < e.changedTouches.length; i++) {
-                const touch = {
-                    id: e.changedTouches[i].identifier,
-                    x: e.changedTouches[i].pageX,
-                    y: e.changedTouches[i].pageY,
-                };
-                const angle = getAngleFromCenter(touch.x, touch.y);
-                const isActive = false;
-
-                tp.push({ touch, angle, isActive });
-            }
-
-            if (tp.length >= vars.MIN_TOUCHPOINTS) {
-                setCount(vars.MAX_COUNTDOWN);
-            }
-
-            return tp;
-        });
-    }, [setTouchPoints, setCount]);
+        console.log('sending start event');
+        dispatchTouches({ type: TP_ADD, touches: e.changedTouches});
+    }, []);
 
     const handleTouchMove = useCallback((e) => {
         e.preventDefault();
-
-        setTouchPoints(tp => {
-            tp = tp.slice();
-
-            // move existing TouchCircle with same key
-            for (var i = 0; i < e.changedTouches.length; i++) {
-                const touch = {
-                    id: e.changedTouches[i].identifier,
-                    x: e.changedTouches[i].pageX,
-                    y: e.changedTouches[i].pageY,
-                };
-                const index = getTouchIndexById(tp, touch);
-                if (index < 0) continue;
-                tp[index].touch = touch;
-                tp[index].angle = getAngleFromCenter(touch.x, touch.y);
-            }
-
-            return tp;
-        });
-    }, [setTouchPoints]);
+        console.log('sending move event');
+        dispatchTouches({ type: TP_MOVE, touches: e.changedTouches});
+    }, []);
 
     const handleTouchEnd = useCallback((e) => {
         e.preventDefault();
-
-        setTouchPoints(tp => {
-            tp = tp.slice();
-
-            // delete existing TouchCircle with same key
-            for (var i = 0; i < e.changedTouches.length; i++) {
-                const touch = {
-                    id: e.changedTouches[i].identifier,
-                    x: e.changedTouches[i].pageX,
-                    y: e.changedTouches[i].pageY,
-                };
-                const index = getTouchIndexById(tp, touch);
-                if (index < 0) continue;
-                tp.splice(index, 1);
-            }
-
-            if (tp.length >= vars.MIN_TOUCHPOINTS) {
-                setCount(vars.MAX_COUNTDOWN);
-            } else {
-                setCount(-10);
-            }
-
-            return tp;
-        });
-    }, [setTouchPoints, setCount]);
-
-    // TODO this is situational - use innerWidth/Height to get the actual angles
-    // to the corners of the screen
-    // TODO move so touchpoints aren't touching each other
-    const moveTouchPointsToNearestEdge = () => {
-        setTouchPoints(tps => touchPoints.map(tp => {
-            if (tp.angle > 325 || tp.angle < 35) {
-                tp.touch.x = 0;
-            } else if (tp.angle < 145) {
-                tp.touch.y = 0;
-            } else if (tp.angle < 215) {
-                tp.touch.x = window.innerWidth;
-            } else {
-                tp.touch.y = window.innerHeight;
-            }
-            return tp;
-        }));
-
-    };
+        console.log('sending end event');
+        dispatchTouches({ type: TP_DELETE, touches: e.changedTouches});
+    }, []);
 
     const stateReducer = (state, action) => {
-        // TODO as svgRef is the root element, can we assume that the
-        // current one is the only one?
-
         switch (action.type) {
             case STATE_INIT :
                 svg.current.addEventListener('touchstart', handleTouchStart, { passive: false });
@@ -137,20 +134,14 @@ export default function Board() {
                 svg.current.removeEventListener('touchmove', handleTouchMove, { passive: false });
                 svg.current.removeEventListener('touchend', handleTouchEnd, { passive: false });
                 svg.current.removeEventListener('touchcancel', handleTouchEnd, { passive: false });
-                setTouchPoints(getPlayerOrder(touchPoints));
-                moveTouchPointsToNearestEdge();
-                setTouchPoints(t => {
-                    const tp = t.slice();
-                    tp[0].isActive = true;
-                    return tp;
-                });
+                dispatchTouches({ type: TP_SETUP_GAME });
                 return 'countdown complete';
             default :
                 return 'waiting...';
         }
     };
 
-    const [state, dispatchState] = useReducer(stateReducer, false);
+    const [state, dispatchState] = useReducer(stateReducer, 'not started');
 
     useEffect(() => {
         const id = setInterval(() => {
