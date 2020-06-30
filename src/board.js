@@ -18,8 +18,6 @@ export default function Board() {
     const [count, setCount] = useState(-10);
     const svg = useRef();
 
-    const initialTouchPoints = [];
-
     const addTouchPoints = (tp, touches) => {
         // note e.changedTouches is a TouchList not an array
         // so we can't map over it
@@ -97,7 +95,8 @@ export default function Board() {
         tp = getPlayerOrder(tp);
         return [...tp];
     };
-    // TODO man there's a lot of code here - break up into functions at least
+
+    const initialTouchPoints = [];
     const [touchPoints, dispatchTouches] = useReducer((tp, { type, touches }) => {
         switch(type) {
             case TP_ADD :
