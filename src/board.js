@@ -43,8 +43,9 @@ export default function Board() {
         svg.current.removeEventListener('touchcancel', handleTouchEnd, { passive: false });
     };
 
-    const stateReducer = (state, action) => {
-        switch (action.type) {
+    // TODO the state return value here is poorly considered
+    const stateReducer = (state, { type }) => {
+        switch (type) {
             case STATE_INIT :
                 addTouchListeners();
                 return 'adding listeners';
