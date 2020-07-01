@@ -1,13 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
+import { StoreProvider } from './store';
 import Noms from './noms'
 import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(
-  <React.StrictMode>
-    <Noms />
-  </React.StrictMode>,
+    <React.StrictMode>
+        <StoreProvider>
+            <Noms />
+        </StoreProvider>
+    </React.StrictMode>,
   document.getElementById('root')
 );
 
