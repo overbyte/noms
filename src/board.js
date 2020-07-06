@@ -115,7 +115,7 @@ export default function Board() {
     }, []);
 
     return (
-        <div>
+        <div className='board'>
             <div style={{
                 color: 'white',
                 position: 'fixed'
