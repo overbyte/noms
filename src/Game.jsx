@@ -12,15 +12,15 @@ export default function Game() {
         <div className="component panel">
             <Switch>
                 <Route 
-                    path={ `${path}/nominate` }
+                    path={ `${ path }/nominate` }
                     render={ () => <div className="gamenominate"><h1>Game Nominate</h1></div> }
                 />
                 <Route 
-                    path={ `${path}/play` }
+                    path={ `${ path }/play` }
                     render={ () => <div className="gameplay"><h1>Game Play</h1></div> }
                 />
                 <Route 
-                    path={ `${path}/over` }
+                    path={ `${ path }/over` }
                     render={ () => <div className="gameover"><h1>Game Over</h1></div> }
                 />
                 <Route 
