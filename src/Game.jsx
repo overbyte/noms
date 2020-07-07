@@ -9,7 +9,7 @@ export default function Game() {
     const { path } = useRouteMatch();
 
     return (
-        <div className="component panel show">
+        <div className="component panel">
             <Switch>
                 <Route 
                     path={ `${path}/nominate` }
