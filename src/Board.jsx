@@ -104,7 +104,7 @@ export default function Board() {
         }, 1000);
 
         return () => clearInterval(id);
-    }, [setCount]);
+    }, [setCount, dispatchState]);
 
     useEffect(() => {
         dispatchState({ type: STATE_INIT });
@@ -112,7 +112,7 @@ export default function Board() {
         return () => {
             dispatchState({ type: STATE_DESTROY });
         }
-    }, []);
+    }, [dispatchState]);
 
     return (
         <div className='board'>
