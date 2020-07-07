@@ -3,7 +3,6 @@ import {
     HashRouter as Router,
     Switch,
     Route,
-    useRouteMatch,
 } from 'react-router-dom';
 import Board from './Board';
 import Game from './Game';
