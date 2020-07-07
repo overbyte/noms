@@ -1,4 +1,5 @@
 import React from 'react';
+import vars from './vars';
 
 export const TP_ADD = 'TP_ADD';
 export const TP_MOVE = 'TP_MOVE';
@@ -24,8 +25,9 @@ const addTouchPoints = (tp, touches) => {
         };
         const angle = getAngleFromCenter(touch.x, touch.y);
         const isActive = false;
+        const colour = vars.generateColour();
 
-        tp.push({ touch, angle, isActive });
+        tp.push({ touch, angle, isActive, colour });
     }
     return tp;
 };
@@ -58,7 +60,6 @@ const removeTouchPoints = (tp, touches) => {
         if (index < 0) continue;
         tp.splice(index, 1);
     }
-
 
     return tp;
 }

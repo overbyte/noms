@@ -3,9 +3,7 @@ import classnames from 'classnames';
 import vars from './vars';
 import './TouchCircle.css';
 
-export default function TouchCircle({ cx, cy, col, move, active }) {
-    const [colour] = useState(col);
-
+export default function TouchCircle({ cx, cy, colour, move, active }) {
     return (
         <circle
             xmlns={ vars.SVG_NS }
