@@ -65,7 +65,7 @@ const removeTouchPoints = (tp, touches) => {
 
 const moveToEdges = tp => {
     // TODO this is situational - use innerWidth/Height to get the actual angles
-    // to the corners of the screen
+    // to the corners of the screen to determine the angles to use
     // TODO move so touchpoints aren't touching each other
     return tp.map(t => {
         if (t.angle > 325 || t.angle < 35) {
@@ -87,6 +87,7 @@ const getPlayerOrder = tp => {
     // move a random number of items to front of array
     const selectionIndex = Math.floor(tp.length * Math.random());
     tp.splice(0, 0, ...tp.splice(selectionIndex));
+    tp[0].isActive = true;
     return tp;
 };
 

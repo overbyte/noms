@@ -9,6 +9,7 @@
 }
 
 .touchcircle.active {
+    stroke: blue;
     animation: pulse 0.5s ease-in-out infinite alternate;
 }
 
