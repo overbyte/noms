@@ -4,9 +4,9 @@ import {
     Switch,
     Route,
 } from 'react-router-dom';
-import Board from './board';
-import PlayerAdd from './playerAdd';
-import './noms.css';
+import Board from './Board';
+import PlayerAdd from './PlayerAdd';
+import './Noms.css';
 
 export default function Noms() {
     const routes = [

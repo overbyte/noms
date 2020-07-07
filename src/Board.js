@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useReducer, useCallback, useContext } from 'react';
-import { Store, TP_ADD, TP_MOVE, TP_REMOVE, TP_MOVE_TO_EDGES } from './store';
-import TouchCircle from './touchCircle';
+import { Store, TP_ADD, TP_MOVE, TP_REMOVE, TP_MOVE_TO_EDGES } from './Store';
+import TouchCircle from './TouchCircle';
 import vars from './vars';
 
 const STATE_INIT = 'STATE_INIT';

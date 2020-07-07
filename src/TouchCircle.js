@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import classnames from 'classnames';
 import vars from './vars';
-import './touchCircle.css';
+import './TouchCircle.css';
 
 export default function TouchCircle({ cx, cy, col, move, active }) {
     const [colour] = useState(col);

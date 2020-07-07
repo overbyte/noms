@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function AddPlayer(props) {
+export default function PlayerAdd(props) {
     return (
         <div className='component chooseplayer'>
             <h1>Add A Player</h1>
