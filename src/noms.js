@@ -5,30 +5,38 @@ import {
     Route,
 } from 'react-router-dom';
 import Board from './board';
-import AddPlayer from './addPlayer';
+import PlayerAdd from './playerAdd';
 import './noms.css';
 
 export default function Noms() {
     const routes = [
         {
-            path: '/addplayer/new',
+            path: '/player/new',
             component: () =>  (
-                <div className='addnewplayer component'>
+                <div className='playernew component'>
                     <h1>add new player</h1>
                 </div>
             )
         },
         {
-            path: '/addplayer/existing',
+            path: '/player/existing',
             component: () => (
-                <div className='addexistingplayer component'>
+                <div className='playerexisting component'>
                     <h1>add existing player</h1>
                 </div>
             )
         },
         {
-            path: '/addplayer',
-            component: AddPlayer,
+            path: '/player/start',
+            component: () => (
+                <div className='playerstart component'>
+                    <h1>Choose a player to start</h1>
+                </div>
+            )
+        },
+        {
+            path: '/player',
+            component: PlayerAdd,
         },
         {
             path: '/game/start',
@@ -47,18 +55,26 @@ export default function Noms() {
             )
         },
         {
-            path: '/game',
+            path: '/game/play',
             component: () => (
-                <div className='game component'>
-                    <h1>Game</h1>
+                <div className='gameplay component'>
+                    <h1>Game play</h1>
                 </div>
             )
         },
         {
-            path: '/',
+            path: '/game/over',
             component: () => (
-                <div className='home component'>
-                    <h1>Home</h1>
+                <div className='gameover component'>
+                    <h1>Game Over</h1>
+                </div>
+            )
+        },
+        {
+            path: '/game',
+            component: () => (
+                <div className='game component'>
+                    <h1>Game</h1>
                 </div>
             )
         },
