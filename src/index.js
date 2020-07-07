@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import { StoreProvider } from './store';
-import Noms from './noms'
+import { StoreProvider } from './Store';
+import Noms from './Noms'
 import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(

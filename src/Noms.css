@@ -1,0 +1,23 @@
+.noms {
+    background-color: black;
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+}
+
+.component {
+    position: fixed;
+    color: white;
+}
+
+.panel {
+    position: absolute;
+    pointer-events: none;
+    background-color: #ff0000;
+    top: 20vh;
+    bottom: 20vh;
+    left: 20vh;
+    right: 20vh;
+    transition: all 1s ease-out;
+}

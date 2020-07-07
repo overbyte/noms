@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef, useReducer, useCallback, useContext } from 'react';
-import { Store, TP_ADD, TP_MOVE, TP_REMOVE, TP_MOVE_TO_EDGES } from './store';
-import TouchCircle from './touchCircle';
+import { Store, TP_ADD, TP_MOVE, TP_REMOVE, TP_MOVE_TO_EDGES } from './Store';
+import TouchCircle from './TouchCircle';
 import vars from './vars';
 
-const STATE_INIT = 'listening...';
-const STATE_DESTROY = 'destroying...';
-const STATE_COUNTDOWN = 'counting down...';
-const STATE_COUNTCOMPLETE = 'counting complete';
+const STATE_INIT = 'STATE_INIT';
+const STATE_DESTROY = 'STATE_DESTROY';
+const STATE_COUNT = 'STATE_COUNT';
+const STATE_COMPLETE = 'STATE_COMPLETE';
 const STATE_WAIT = 'STATE_WAIT';
 
 export default function Board() {
@@ -54,9 +54,9 @@ export default function Board() {
             case STATE_DESTROY : 
                 removeTouchListeners();
                 return 'destroying component';
-            case STATE_COUNTDOWN :
+            case STATE_COUNT :
                 return 'counting down';
-            case STATE_COUNTCOMPLETE :
+            case STATE_COMPLETE :
                 removeTouchListeners();
                 return 'countdown complete';
             default :
@@ -94,17 +94,17 @@ export default function Board() {
                     dispatchState({ type: STATE_WAIT });
                     return -10;
                 } else if (c <= 0) {
-                    dispatchState({ type: STATE_COUNTCOMPLETE });
+                    dispatchState({ type: STATE_COMPLETE });
                     clearInterval(id);
                     return 0;
                 }
-                dispatchState({ type: STATE_COUNTDOWN });
+                dispatchState({ type: STATE_COUNT });
                 return --c;
             });
         }, 1000);
 
         return () => clearInterval(id);
-    }, [setCount]);
+    }, [setCount, dispatchState]);
 
     useEffect(() => {
         dispatchState({ type: STATE_INIT });
@@ -112,10 +112,10 @@ export default function Board() {
         return () => {
             dispatchState({ type: STATE_DESTROY });
         }
-    }, []);
+    }, [dispatchState]);
 
     return (
-        <div>
+        <div className='board'>
             <div style={{
                 color: 'white',
                 position: 'fixed'
