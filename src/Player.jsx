@@ -4,28 +4,21 @@ import {
     Switch,
     Route,
 } from 'react-router-dom';
+import PlayerNew from './PlayerNew';
+import PlayerExisting from './PlayerExisting';
+import './Player.css';
 
 export default function Player() {
     const { path } = useRouteMatch();
 
     return (
-        <div className="component panel">
+        <div className="panel">
+            <PlayerNew />
+            <PlayerExisting />
             <Switch>
-                <Route 
-                    path={ `${ path }/new` }
-                    render={ () => <div className="playernew"><h1>Player New</h1></div> }
-                />
-                <Route 
-                    path={ `${ path }/existing` }
-                    render={ () => <div className="playerexisting"><h1>Player Existing</h1></div> }
-                />
                 <Route 
                     path={ `${ path }/start` }
                     render={ () => <div className="playerstart"><h1>Player Start</h1></div> }
-                />
-                <Route 
-                    path={ path }
-                    render={ () => <div className="player"><h1>Player Start</h1></div> }
                 />
             </Switch>
         </div>
