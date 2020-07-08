@@ -1,23 +1,31 @@
 .noms {
+    overflow: hidden;
     background-color: black;
     margin: 0;
     padding: 0;
-    width: 100vw;
-    height: 100vh;
-}
-
-.component {
-    position: fixed;
-    color: white;
+    width: 100%;
+    height: 100%;
 }
 
 .panel {
     position: absolute;
-    pointer-events: none;
-    background-color: #ff0000;
+    display: flex;
+    overflow: hidden;
+    color: white;
+    background-color: darkslategrey;
     top: 20vh;
     bottom: 20vh;
     left: 20vh;
     right: 20vh;
-    transition: all 1s ease-out;
+    padding: 3vh;
+    transition: all 0.5s ease-out;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: tomato;
+    margin: 0 0 1rem 0;
+}
+
+input {
+    user-select: initial;
 }
