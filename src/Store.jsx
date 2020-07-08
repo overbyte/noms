@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useReducer, createContext } from 'react';
 import vars from './vars';
 
 export const TP_ADD = 'TP_ADD';
@@ -7,12 +7,16 @@ export const TP_REMOVE = 'TP_REMOVE';
 export const TP_MOVE_TO_EDGES = 'TP_MOVE_TO_EDGES';
 export const TP_CHOOSE_PLAYER = 'TP_CHOOSE_PLAYER';
 
-export const Store = React.createContext();
+export const Store = createContext();
 
-const initialState = {
+const initialTouchState = {
     touchPoints: [],
     current: '',
 };
+
+const initialNameState = localStorage.getItem('nomsPlayers') 
+    ? localStorage.getItem('nomsPlayers').split(',')
+    : [];
 
 const addTouchPoints = (tp, touches) => {
     // note e.changedTouches is a TouchList not an array
@@ -107,7 +111,7 @@ const getAngleFromCenter = (x, y) => {
     return angle;
 };
 
-const reducer = (state, { type, touches }) => {
+const touchReducer = (state, { type, touches }) => {
     switch(type) {
         case TP_ADD :
             return {...state, touchPoints: addTouchPoints([...state.touchPoints], touches), current: type  };
@@ -120,13 +124,30 @@ const reducer = (state, { type, touches }) => {
         case TP_MOVE_TO_EDGES :
             return {...state, touchPoints: moveToEdges([...state.touchPoints]), current: type  };
         default:
-            throw new Error('Unrecognised touchpoint event type');
+            throw new Error('Unrecognised touchpoint event type', type);
+    }
+};
+
+const namesReducer = (state, { type, data }) => {
+    let newState;
+    switch (type) {
+        case 'NAME_ADD' :
+            newState = [...state, data];
+            localStorage.setItem('nomsPlayers', newState);
+            return newState;
+        case 'NAME_REMOVE' :
+            newState = [...state.filter(name=> name !== data)];
+            localStorage.setItem('nomsPlayers', newState);
+            return newState;
+        default :
+            throw new Error('action type not found', type);
     }
 };
 
 export const StoreProvider = (props) => {
-    const [touchState, dispatchTouches] = React.useReducer(reducer, initialState);
-    const value = { touchState, dispatchTouches };
+    const [touchState, dispatchTouches] = useReducer(touchReducer, initialTouchState);
+    const [names, dispatchNames] = useReducer(namesReducer, initialNameState);
+    const value = { touchState, dispatchTouches, names, dispatchNames };
 
     return <Store.Provider value={ value }>{ props.children }</Store.Provider>;
 };
