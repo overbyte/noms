@@ -1,0 +1,10 @@
+.playerexisting {
+    display: block;
+    flex: 1;
+    overflow: hidden;
+}
+
+.playernew {
+    display: block;
+    flex: 1;
+}
