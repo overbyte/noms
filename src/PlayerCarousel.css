@@ -1,0 +1,14 @@
+.carousel {
+    display: flex;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow-x: scroll; 
+}
+
+.carousel .item {
+    display: block;
+    padding: 0.5rem;
+    background-color: teal;
+    text-align: center;
+}
