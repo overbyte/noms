@@ -2,9 +2,11 @@
     display: block;
     flex: 1;
     overflow: hidden;
+    margin: 1rem;
 }
 
 .playernew {
     display: block;
     flex: 1;
+    margin: 1rem;
 }
