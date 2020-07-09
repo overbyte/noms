@@ -82,7 +82,6 @@ const getPlayerOrder = tp => {
     // move a random number of items to front of array
     const selectionIndex = Math.floor(tp.length * Math.random());
     tp.splice(0, 0, ...tp.splice(selectionIndex));
-    tp[0].isActive = true;
     return tp;
 };
 
@@ -112,7 +111,9 @@ const touchReducer = (state, { type, touches }) => {
         case 'TP_CHOOSE_PLAYER' :
             return {...state, touchPoints: getPlayerOrder([...state.touchPoints]), current: type  };
         case 'TP_END' :
-            return {...state, touchPoints: moveToEdges([...state.touchPoints]), current: type  };
+            let touchPoints = moveToEdges([...state.touchPoints]);
+            touchPoints[0].isActive = true;
+            return {...state, touchPoints, current: type  };
         default:
             throw new Error('Unrecognised touchpoint event type', type);
     }
