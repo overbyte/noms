@@ -1,9 +1,9 @@
 import React, { useContext, useState } from 'react';
-import { Store } from './Store';
+import { NameStore } from './NameStore';
 
 export default function PlayerNew() {
     const [name, setName] = useState('');
-    const { dispatchNames } = useContext(Store);
+    const { dispatchNames } = useContext(NameStore);
 
 
     const handleNameChange = e => setName(e.target.value);

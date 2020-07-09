@@ -1,10 +1,10 @@
 import React, { useContext } from 'react';
-import { Store } from './Store';
+import { NameStore } from './NameStore';
 import PlayerCarousel from './PlayerCarousel';
 
 export default function PlayerExisting() {
 
-    const { names } = useContext(Store);
+    const { names } = useContext(NameStore);
 
     return (
         <section className="playerexisting">

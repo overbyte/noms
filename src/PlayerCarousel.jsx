@@ -3,7 +3,7 @@ import React, {
     useRef,
     useContext,
 } from 'react';
-import { Store } from './Store';
+import { NameStore } from './NameStore';
 import './PlayerCarousel.css';
 
 export default function PlayerCarousel({ names }) {
@@ -28,7 +28,7 @@ export default function PlayerCarousel({ names }) {
 }
 
 function Item({ name }) {
-    const { dispatchNames } = useContext(Store);
+    const { dispatchNames } = useContext(NameStore);
 
     const handleDeleteClick = e => dispatchNames({ type: 'NAME_REMOVE', data: name });
     const handleSelectClick = e => dispatchNames({ type: 'NAME_SELECT', data: name });
