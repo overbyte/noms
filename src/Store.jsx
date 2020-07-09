@@ -1,12 +1,6 @@
 import React, { useReducer, createContext } from 'react';
 import vars from './vars';
 
-export const TP_ADD = 'TP_ADD';
-export const TP_MOVE = 'TP_MOVE';
-export const TP_REMOVE = 'TP_REMOVE';
-export const TP_END = 'TP_END';
-export const TP_CHOOSE_PLAYER = 'TP_CHOOSE_PLAYER';
-
 export const Store = createContext();
 
 const initialTouchState = {
@@ -115,15 +109,15 @@ const getAngleFromCenter = (x, y) => {
 
 const touchReducer = (state, { type, touches }) => {
     switch(type) {
-        case TP_ADD :
+        case 'TP_ADD' :
             return {...state, touchPoints: addTouchPoints([...state.touchPoints], touches), current: type  };
-        case TP_MOVE :
+        case 'TP_MOVE' :
             return {...state, touchPoints: moveTouchPoints([...state.touchPoints], touches), current: type  };
-        case TP_REMOVE :
+        case 'TP_REMOVE' :
             return {...state, touchPoints: removeTouchPoints([...state.touchPoints], touches), current: type  };
-        case TP_CHOOSE_PLAYER :
+        case 'TP_CHOOSE_PLAYER' :
             return {...state, touchPoints: getPlayerOrder([...state.touchPoints]), current: type  };
-        case TP_END :
+        case 'TP_END' :
             return {...state, touchPoints: moveToEdges([...state.touchPoints]), current: type  };
         default:
             throw new Error('Unrecognised touchpoint event type', type);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useReducer, useCallback, useContext } from 'react';
-import { Store, TP_ADD, TP_MOVE, TP_REMOVE, TP_END } from './Store';
+import { Store } from './Store';
 import TouchCircle from './TouchCircle';
 import vars from './vars';
 
@@ -16,17 +16,17 @@ export default function Board() {
 
     const handleTouchStart = useCallback((e) => {
         e.preventDefault();
-        dispatchTouches({ type: TP_ADD, touches: e.changedTouches});
+        dispatchTouches({ type: 'TP_ADD', touches: e.changedTouches});
     }, [dispatchTouches]);
 
     const handleTouchMove = useCallback((e) => {
         e.preventDefault();
-        dispatchTouches({ type: TP_MOVE, touches: e.changedTouches});
+        dispatchTouches({ type: 'TP_MOVE', touches: e.changedTouches});
     }, [dispatchTouches]);
 
     const handleTouchEnd = useCallback((e) => {
         e.preventDefault();
-        dispatchTouches({ type: TP_REMOVE, touches: e.changedTouches});
+        dispatchTouches({ type: 'TP_REMOVE', touches: e.changedTouches});
     }, [dispatchTouches]);
 
     const addTouchListeners = () => {
@@ -69,7 +69,7 @@ export default function Board() {
     useEffect(() => {
         switch (state) {
             case 'countdown complete' :
-                dispatchTouches({ type: TP_END });
+                dispatchTouches({ type: 'TP_END' });
                 break;
             default :
                 break;
@@ -78,7 +78,7 @@ export default function Board() {
 
     useEffect(() => {
         // a touchmove should not affect the countdown
-        if (touchState.current !== TP_MOVE) {
+        if (touchState.current !== 'TP_MOVE') {
             if (touchState.touchPoints.length >= vars.MIN_TOUCHPOINTS) {
                 setCount(vars.MAX_COUNTDOWN);
             } else {
