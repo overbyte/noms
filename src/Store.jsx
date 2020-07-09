@@ -132,11 +132,13 @@ const namesReducer = (state, { type, data }) => {
             localStorage.setItem('nomsPlayers', newState);
             return newState;
         case 'NAME_REMOVE' :
-            newState = [...state.filter(name=> name !== data)];
+            newState = state.filter(name=> name !== data);
             localStorage.setItem('nomsPlayers', newState);
             return newState;
+        case 'NAME_SELECT' :
+            return [...state];
         default :
-            throw new Error('action type not found', type);
+            throw new Error('Unrecognised name event type', type);
     }
 };
 
