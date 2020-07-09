@@ -12,6 +12,7 @@ export default function PlayerNew() {
         e.preventDefault();
         // add to players list in local storage
         dispatchNames({ type: 'NAME_ADD', data: name });
+        setName('');
     };
 
     return (
