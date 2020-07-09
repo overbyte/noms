@@ -10,3 +10,15 @@
     flex: 1;
     margin: 1rem;
 }
+
+.playernew img {
+    margin-top: 1rem;
+}
+
+.playernew form {
+    margin-top: 1rem;
+}
+
+.playernew form button {
+    margin-top: 1rem;
+}

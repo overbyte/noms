@@ -30,7 +30,7 @@ function Item({ name, dispatchNames }) {
 
     return (
         <li className='item'>
-            <img src={ `https://api.adorable.io/avatars/100/${name}.png` } alt={ name } />
+            <img src={ `https://api.adorable.io/avatars/180/${ name }.png` } alt={ name } />
             <p>{name}</p>
             <button onClick={ handleDeleteClick }>x</button>
             <div className="selection" onClick={ handleSelectClick }></div>

@@ -17,13 +17,14 @@
     bottom: 20vh;
     left: 20vh;
     right: 20vh;
-    padding: 3vh;
+    padding: 2vh;
     transition: all 0.5s ease-out;
 }
 
 h1, h2, h3, h4, h5, h6 {
     color: tomato;
     margin: 0 0 1rem 0;
+    padding: 0;
 }
 
 input {

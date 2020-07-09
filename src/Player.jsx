@@ -62,7 +62,7 @@ function New({ dispatchNames }) {
     return (
         <section className='playernew'>
             <h1>Add A New Player</h1>
-            <img src={ `https://api.adorable.io/avatars/100/${ name }.png` } alt={ name } />
+            <img src={ `https://api.adorable.io/avatars/180/${ name }.png` } alt={ name } />
             <form onSubmit={ handleSubmit }>
                 <input 
                     type='text' 
