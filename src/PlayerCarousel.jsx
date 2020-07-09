@@ -18,8 +18,8 @@ export default function PlayerCarousel({ names }) {
             {
                 names.map((name, index) => 
                         <Item 
-                            key={index}
-                            name={name}
+                            key={ index }
+                            name={ name }
                         />
                 )
             }
