@@ -4,11 +4,19 @@
     margin: 0;
     padding: 0;
     overflow-x: scroll; 
+    scroll-snap-type: x proximity;
 }
 
 .carousel .item {
     display: block;
-    padding: 0.5rem;
+    padding: 1rem;
     background-color: teal;
     text-align: center;
+    scroll-snap-align: center;
+}
+.carousel .item:first-child {
+    scroll-snap-align: start;
+}
+.carousel .item:last-child {
+    scroll-snap-align: end;
 }
