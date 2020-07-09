@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useReducer, useCallback, useContext } from 'react';
-import { Store, TP_ADD, TP_MOVE, TP_REMOVE, TP_MOVE_TO_EDGES } from './Store';
+import { Store, TP_ADD, TP_MOVE, TP_REMOVE, TP_END } from './Store';
 import TouchCircle from './TouchCircle';
 import vars from './vars';
 
@@ -69,7 +69,7 @@ export default function Board() {
     useEffect(() => {
         switch (state) {
             case 'countdown complete' :
-                dispatchTouches({ type: TP_MOVE_TO_EDGES });
+                dispatchTouches({ type: TP_END });
                 break;
             default :
                 break;
