@@ -1,11 +1,8 @@
 import React, { useState, useReducer } from 'react';
-import { useRouteMatch, Switch, Route } from 'react-router-dom';
 import PlayerCarousel from './PlayerCarousel';
 import './Player.css';
 
 export default function Player() {
-    const { path } = useRouteMatch();
-
     // use ternery because calling .split() will cause an error if the localstorage
     // item doesn't exist
     const initialNameState = localStorage.getItem('nomsPlayers') 
@@ -34,16 +31,8 @@ export default function Player() {
 
     return (
         <div className="panel">
-            <Switch>
-                <Route 
-                    path={ `${ path }/start` }
-                    render={ () => <div className="playerstart"><h1>Player Start</h1></div> }
-                />
-                <Route path={ path }>
-                    <Existing dispatchNames={ dispatchNames } names={ names } />
-                    <New dispatchNames={ dispatchNames } />
-                </Route>
-            </Switch>
+            <Existing dispatchNames={ dispatchNames } names={ names } />
+            <New dispatchNames={ dispatchNames } />
         </div>
     );
 }
