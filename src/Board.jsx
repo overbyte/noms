@@ -69,7 +69,7 @@ export default function Board() {
     useEffect(() => {
         switch (state) {
             case 'countdown complete' :
-                dispatchTouches({ type: 'TP_END' });
+                dispatchTouches({ type: 'PLAYER_READY' });
                 break;
             default :
                 break;

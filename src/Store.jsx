@@ -3,7 +3,7 @@ import vars from './vars';
 
 export const Store = createContext();
 
-const initialTouchState = {
+const initialState = {
     touchPoints: [],
     current: '',
 };
@@ -108,9 +108,9 @@ const touchReducer = (state, { type, touches }) => {
             return {...state, touchPoints: moveTouchPoints([...state.touchPoints], touches), current: type  };
         case 'TP_REMOVE' :
             return {...state, touchPoints: removeTouchPoints([...state.touchPoints], touches), current: type  };
-        case 'TP_CHOOSE_PLAYER' :
+        case 'PLAYER_CHOOSE' :
             return {...state, touchPoints: getPlayerOrder([...state.touchPoints]), current: type  };
-        case 'TP_END' :
+        case 'PLAYER_READY' :
             let touchPoints = moveToEdges([...state.touchPoints]);
             touchPoints[0].isActive = true;
             return {...state, touchPoints, current: type  };
@@ -120,7 +120,7 @@ const touchReducer = (state, { type, touches }) => {
 };
 
 export const StoreProvider = (props) => {
-    const [touchState, dispatchTouches] = useReducer(touchReducer, initialTouchState);
+    const [touchState, dispatchTouches] = useReducer(touchReducer, initialState);
     const value = { touchState, dispatchTouches };
 
     return <Store.Provider value={ value }>{ props.children }</Store.Provider>;
