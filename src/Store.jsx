@@ -14,6 +14,8 @@ const initialTouchState = {
     current: '',
 };
 
+// use ternery because calling .split() will cause an error if the localstorage
+// item doesn't exist
 const initialNameState = localStorage.getItem('nomsPlayers') 
     ? localStorage.getItem('nomsPlayers').split(',')
     : [];
