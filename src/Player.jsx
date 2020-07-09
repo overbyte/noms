@@ -13,13 +13,15 @@ export default function Player() {
 
     return (
         <div className="panel">
-            <PlayerNew />
-            <PlayerExisting />
             <Switch>
                 <Route 
                     path={ `${ path }/start` }
                     render={ () => <div className="playerstart"><h1>Player Start</h1></div> }
                 />
+                <Route path={ path }>
+                    <PlayerNew />
+                    <PlayerExisting />
+                </Route>
             </Switch>
         </div>
     );
