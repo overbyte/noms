@@ -5,10 +5,6 @@ import './PlayerCarousel.css';
 export default function PlayerCarousel({ names }) {
     const ref = useRef();
 
-    const handleClick = e => {
-        console.log(e);
-    };
-
     useEffect(() => {
         ref.current.scrollTo({ left: ref.current.scrollWidth, behavior: 'smooth' });
     }, [names]);
@@ -16,16 +12,12 @@ export default function PlayerCarousel({ names }) {
     return (
         <ul className="carousel" ref={ ref }>
             {
-                names.map((name, index) => (
-                    <li 
-                        key={index}
-                        className='item'
-                        onClick={ handleClick }>
+                names.map((name, index) => 
                         <PlayerCarouselItem 
+                            key={index}
                             name={name}
                         />
-                    </li>
-                ))
+                )
             }
         </ul>
     );
