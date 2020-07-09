@@ -1,12 +1,7 @@
-import React, {
-    useEffect,
-    useRef,
-    useContext,
-} from 'react';
-import { NameStore } from './NameStore';
+import React, { useEffect, useRef } from 'react';
 import './PlayerCarousel.css';
 
-export default function PlayerCarousel({ names }) {
+export default function PlayerCarousel({ dispatchNames, names }) {
     const ref = useRef();
 
     useEffect(() => {
@@ -20,6 +15,7 @@ export default function PlayerCarousel({ names }) {
                         <Item 
                             key={ index }
                             name={ name }
+                            dispatchNames={ dispatchNames }
                         />
                 )
             }
@@ -27,8 +23,7 @@ export default function PlayerCarousel({ names }) {
     );
 }
 
-function Item({ name }) {
-    const { dispatchNames } = useContext(NameStore);
+function Item({ name, dispatchNames }) {
 
     const handleDeleteClick = e => dispatchNames({ type: 'NAME_REMOVE', data: name });
     const handleSelectClick = e => dispatchNames({ type: 'NAME_SELECT', data: name });
