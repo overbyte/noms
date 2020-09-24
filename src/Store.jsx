@@ -8,54 +8,56 @@ const initialState = {
     current: '',
 };
 
-const addTouchPoints = (tp, touches) => {
-    // note e.changedTouches is a TouchList not an array
-    // so we can't map over it
-    for (var i = 0; i < touches.length; i++) {
-        const touch = {
-            id: touches[i].identifier,
-            x: touches[i].pageX,
-            y: touches[i].pageY,
-        };
-        const angle = getAngleFromCenter(touch.x, touch.y);
-        const isActive = false;
-        const colour = vars.generateColour();
+const addTouchPoints = (tp, touchList) => {
+    const newTouches = Array.from(touchList)
+        .map(touch => {
+            return {
+                touch: {
+                    id: touch.identifier,
+                    x: touch.pageX,
+                    y: touch.pageY,
+                },
+                angle: getAngleFromCenter(touch.pageX, touch.pageY),
+                isActive: false,
+                colour: vars.generateColour(),
+            };
+        });
 
-        tp.push({ touch, angle, isActive, colour });
-    }
-    return tp;
+    return [
+        ...tp,
+        ...newTouches,
+    ];
 };
 
-const moveTouchPoints = (tp, touches) => {
-    // move existing TouchCircle with same key
-    for (var i = 0; i < touches.length; i++) {
-        const touch = {
-            id: touches[i].identifier,
-            x: touches[i].pageX,
-            y: touches[i].pageY,
-        };
-        const index = getTouchIndexById(tp, touch);
-        if (index < 0) continue;
-        tp[index].touch = touch;
-        tp[index].angle = getAngleFromCenter(touch.x, touch.y);
-    }
-    return tp;
+const moveTouchPoints = (tp, touchList) => {
+    const touches = Array.from(touchList);
+    return tp
+        .map(t => {
+            const matches = touches.filter(touch => touch.identifier === t.touch.id);
+            // uses if because using filter causes css keyframes to reset
+            if (matches.length > 0) {
+                const touch = matches[0];
+                return {
+                    ...t,
+                    touch: {
+                        id: touch.identifier,
+                        x: touch.pageX,
+                        y: touch.pageY,
+                    },
+                    angle: getAngleFromCenter(touch.pageX, touch.pageY),
+                };
+            } else {
+                return t;
+            }
+        });
 };
 
-const removeTouchPoints = (tp, touches) => {
-    // delete existing TouchCircle with same key
-    for (var i = 0; i < touches.length; i++) {
-        const touch = {
-            id: touches[i].identifier,
-            x: touches[i].pageX,
-            y: touches[i].pageY,
-        };
-        const index = getTouchIndexById(tp, touch);
-        if (index < 0) continue;
-        tp.splice(index, 1);
-    }
-
-    return tp;
+const removeTouchPoints = (tp, touchList) => {
+    const touches = Array.from(touchList);
+    return tp
+        .filter(t => 
+            touches.filter(touch => touch.identifier === t.touch.id).length < 1
+        );
 }
 
 const moveToEdges = tp => {
@@ -84,8 +86,6 @@ const getPlayerOrder = tp => {
     tp.splice(0, 0, ...tp.splice(selectionIndex));
     return tp;
 };
-
-const getTouchIndexById = (touchPoints, newTouch) => touchPoints.findIndex(t => t.touch.id === newTouch.id);
 
 const getCenterPoint = () => {
     return {
