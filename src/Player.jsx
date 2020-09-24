@@ -24,6 +24,10 @@ export default function Player() {
 
     const [names, dispatchNames] = useReducer(namesReducer, initialNameState);
 
+    useEffect(() => {
+        localStorage.setItem('nomsPlayers', names);
+    }, [names]);
+
     return (
         <div className="panel">
             <Existing dispatchNames={ dispatchNames } names={ names } />
