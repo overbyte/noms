@@ -77,13 +77,14 @@ export default function Board() {
 
     useEffect(() => {
         switch (state) {
-            case 'countdown complete' :
+            case STATE_COMPLETE:
                 dispatchTouches({ type: 'PLAYER_READY' });
+                history.push('/player');
                 break;
             default :
                 break;
         }
-    }, [state, dispatchTouches]);
+    }, [state, dispatchTouches, history]);
 
     useEffect(() => {
         // a touchmove should not affect the countdown
