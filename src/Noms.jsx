@@ -25,9 +25,9 @@ export default function Noms() {
                             component={ Game }
                         />
                     </Switch>
+                    <Board />
                 </Router>
 
-                <Board />
             </StoreProvider>
         </div>
     )

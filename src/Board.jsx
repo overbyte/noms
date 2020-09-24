@@ -1,4 +1,12 @@
-import React, { useState, useEffect, useRef, useReducer, useCallback, useContext } from 'react';
+import React, {
+    useState,
+    useEffect,
+    useRef,
+    useReducer,
+    useCallback,
+    useContext,
+} from 'react';
+import { useHistory } from 'react-router-dom';
 import { Store } from './Store';
 import TouchCircle from './TouchCircle';
 import vars from './vars';
@@ -10,6 +18,7 @@ const STATE_COMPLETE = 'STATE_COMPLETE';
 const STATE_WAIT = 'STATE_WAIT';
 
 export default function Board() {
+    const history = useHistory();
     const [count, setCount] = useState(-10);
     const svg = useRef();
     const { touchState, dispatchTouches } = useContext(Store);
