@@ -1,4 +1,4 @@
-import React, { useState, useReducer } from 'react';
+import React, { useState, useReducer, useEffect } from 'react';
 import PlayerCarousel from './PlayerCarousel';
 import './Player.css';
 
@@ -10,16 +10,11 @@ export default function Player() {
         : [];
 
     const namesReducer = (state, { type, data }) => {
-        let newState;
         switch (type) {
             case 'NAME_ADD' :
-                newState = [...state, data];
-                localStorage.setItem('nomsPlayers', newState);
-                return newState;
+                return [...state, data];
             case 'NAME_REMOVE' :
-                newState = state.filter(name=> name !== data);
-                localStorage.setItem('nomsPlayers', newState);
-                return newState;
+                return state.filter(name=> name !== data);
             case 'NAME_SELECT' :
                 return [...state];
             default :
