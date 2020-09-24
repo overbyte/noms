@@ -57,17 +57,17 @@ export default function Board() {
         switch (type) {
             case STATE_INIT :
                 addTouchListeners();
-                return 'adding listeners';
+                return type;
             case STATE_WAIT :
-                return 'waiting...';
+                return type;
             case STATE_DESTROY : 
                 removeTouchListeners();
-                return 'destroying component';
+                return type;
             case STATE_COUNT :
-                return 'counting down';
+                return type;
             case STATE_COMPLETE :
                 removeTouchListeners();
-                return 'countdown complete';
+                return type;
             default :
                 throw new Error('Unexpected state found');
         }
